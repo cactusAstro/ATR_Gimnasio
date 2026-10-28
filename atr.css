@@ -3516,3 +3516,12 @@ html body .glosario-buscador, html body .filtro-buscar { display: block; width: 
 /* las fotos de la sala (barra, saco, trofeo y rutinas), en blanco y negro como el resto */
 html body .dis-foto, html body .dia-visual img { filter: grayscale(1) contrast(1.06) brightness(1.04); }
 html body .dia-aviso { border: 0 !important; border-radius: var(--r-3) !important; background: var(--relleno); padding: 10px 14px; color: var(--texto-2); }
+/* pantallas táctiles: zonas de toque de al menos 40px y etiquetas legibles */
+@media (pointer: coarse) {
+    html body .foot-links li { margin-bottom: 0; }
+    html body .foot-links a { display: inline-flex; align-items: center; min-height: 40px; }
+    html body .barra-leyenda a, html body .ruta li a { display: inline-flex; align-items: center; min-height: 40px; }
+    html body .form-check { min-height: 40px; display: flex; align-items: center; gap: 10px; }
+    html body .form-check-input { width: 20px; height: 20px; margin: 0; flex: none; }
+    html body .mito-pista, html body .ruta-top .estado, html body .dia-truco { font-size: 12px; }
+}
