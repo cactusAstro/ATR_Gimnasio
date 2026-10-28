@@ -2318,7 +2318,7 @@
             <p class="atr-sub">Términos y abreviaturas habituales en la sala, explicados con claridad. Usa el buscador para encontrar cualquiera.</p>
         </div>
 
-        <input type="text" class="glosario-buscador" id="glosarioBuscador" placeholder="Busca un término..."
+        <input type="text" class="glosario-buscador" id="glosarioBuscador" aria-label="Buscar en el glosario" placeholder="Busca un término..."
             oninput="filtrarGlosario()">
 
         <div class="glosario-grid" id="glosarioGrid"></div>
@@ -2334,8 +2334,8 @@
             <!-- CREAR POST -->
             <div class="crear-post-card">
                 <h3>Tu cuaderno de rutinas</h3>
-                <textarea class="post-input" id="postTitulo" placeholder="Título (ej: Mi rutina PPL)"></textarea>
-                <textarea class="post-input" id="postContenido" placeholder="Describe la rutina: ejercicios, series y notas..."
+                <textarea class="post-input" id="postTitulo" aria-label="Título de la rutina" placeholder="Título (ej: Mi rutina PPL)"></textarea>
+                <textarea class="post-input" id="postContenido" aria-label="Descripción de la rutina" placeholder="Describe la rutina: ejercicios, series y notas..."
                     style="min-height: 120px;"></textarea>
 
                 <div class="post-tags">
@@ -2361,9 +2361,9 @@
 
             <!-- FILTROS -->
             <div class="filtros-comunidad">
-                <input type="text" class="filtro-buscar" id="filtroBuscar" placeholder="Buscar rutinas..."
+                <input type="text" class="filtro-buscar" id="filtroBuscar" aria-label="Buscar rutinas" placeholder="Buscar rutinas..."
                     oninput="filtrarPosts()">
-                <select class="filtro-tag" id="filtroTag" onchange="filtrarPosts()">
+                <select class="filtro-tag" id="filtroTag" aria-label="Filtrar por tipo" onchange="filtrarPosts()">
                     <option value="">Todos los tipos</option>
                     <option value="ppl">PPL</option>
                     <option value="torso-pierna">Torso/Pierna</option>
@@ -2371,7 +2371,7 @@
                     <option value="definicion">Definición</option>
                     <option value="volumen">Volumen</option>
                 </select>
-                <select class="filtro-orden" id="filtroOrden" onchange="filtrarPosts()">
+                <select class="filtro-orden" id="filtroOrden" aria-label="Ordenar rutinas" onchange="filtrarPosts()">
                     <option value="reciente">Más recientes</option>
                     <option value="populares">Más populares</option>
                     <option value="comentarios">Más comentados</option>
@@ -2404,25 +2404,25 @@
                 <div class="formulario-checkin" id="formularioCheckin" style="display:none;">
                     <img id="previewFoto" class="preview-foto" src="" alt="Vista previa de la foto">
 
-                    <input type="text" class="checkin-input" id="checkinEjercicio"
+                    <input type="text" class="checkin-input" id="checkinEjercicio" aria-label="Ejercicio principal"
                         placeholder="Ejercicio principal (ej: Sentadilla)">
 
-                    <textarea class="checkin-input" id="checkinDescripcion"
+                    <textarea class="checkin-input" id="checkinDescripcion" aria-label="Cómo fue el entrenamiento"
                         placeholder="¿Cómo fue el entrenamiento? Series, repeticiones, sensación..."></textarea>
 
                     <div class="checkin-peso">
-                        <label>Peso movido (kg):</label>
+                        <label for="checkinPeso">Peso movido (kg):</label>
                         <input type="number" class="checkin-input" id="checkinPeso" placeholder="80" min="0">
                     </div>
 
                     <div class="checkin-reps">
-                        <label>Repeticiones:</label>
+                        <label for="checkinReps">Repeticiones:</label>
                         <input type="number" class="checkin-input" id="checkinReps" placeholder="8" min="0">
                     </div>
 
                     <div class="checkin-emojis">
-                        <label>¿Cómo fue? </label>
-                        <div class="emojis-selector">
+                        <label id="lblComoFue">¿Cómo fue?</label>
+                        <div class="emojis-selector" role="group" aria-labelledby="lblComoFue">
                             <button class="emoji-btn" type="button" onclick="seleccionarEmooji('Excelente')">Excelente</button>
                             <button class="emoji-btn" type="button" onclick="seleccionarEmooji('Bueno')">Bueno</button>
                             <button class="emoji-btn" type="button" onclick="seleccionarEmooji('Cansado')">Cansado</button>
@@ -2452,7 +2452,7 @@
         </div>
 
         <div class="compromiso-form">
-            <textarea class="compromiso-input" id="compromisoInput"
+            <textarea class="compromiso-input" id="compromisoInput" aria-label="Tu objetivo para esta semana"
                 placeholder="Ej: Voy a entrenar 4 días esta semana y comer 150g de proteína al día"></textarea>
             <button class="btn-compromiso" onclick="guardarCompromiso()">Guardar objetivo</button>
         </div>
@@ -2555,10 +2555,10 @@
                 El peso máximo que podrías levantar UNA sola vez según tus reps actuales
             </p>
 
-            <label class="calc-label">Peso levantado (kg):</label>
+            <label for="rm-peso" class="calc-label">Peso levantado (kg):</label>
             <input type="number" class="calc-input" id="rm-peso" placeholder="80" oninput="calcular1RM()">
 
-            <label class="calc-label">Repeticiones realizadas:</label>
+            <label for="rm-reps" class="calc-label">Repeticiones realizadas:</label>
             <input type="number" class="calc-input" id="rm-reps" placeholder="8" oninput="calcular1RM()">
 
             <div class="calc-resultado" id="rm-resultado" style="display: none;">
@@ -2579,23 +2579,23 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <label class="calc-label">Peso (kg):</label>
+                    <label for="m-peso" class="calc-label">Peso (kg):</label>
                     <input type="number" class="calc-input" id="m-peso" placeholder="75" oninput="calcularMacros()">
 
-                    <label class="calc-label">Altura (cm):</label>
+                    <label for="m-altura" class="calc-label">Altura (cm):</label>
                     <input type="number" class="calc-input" id="m-altura" placeholder="175" oninput="calcularMacros()">
 
-                    <label class="calc-label">Edad:</label>
+                    <label for="m-edad" class="calc-label">Edad:</label>
                     <input type="number" class="calc-input" id="m-edad" placeholder="22" oninput="calcularMacros()">
                 </div>
                 <div class="col-md-6">
-                    <label class="calc-label">Sexo:</label>
+                    <label for="m-sexo" class="calc-label">Sexo:</label>
                     <select class="calc-select" id="m-sexo" onchange="calcularMacros()">
                         <option value="h">Hombre</option>
                         <option value="m">Mujer</option>
                     </select>
 
-                    <label class="calc-label">Actividad:</label>
+                    <label for="m-actividad" class="calc-label">Actividad:</label>
                     <select class="calc-select" id="m-actividad" onchange="calcularMacros()">
                         <option value="1.2">Sedentario</option>
                         <option value="1.375">Ligero (1-3 días/sem)</option>
@@ -2604,7 +2604,7 @@
                         <option value="1.9">Muy activo (2 veces/día)</option>
                     </select>
 
-                    <label class="calc-label">Objetivo:</label>
+                    <label for="m-objetivo" class="calc-label">Objetivo:</label>
                     <select class="calc-select" id="m-objetivo" onchange="calcularMacros()">
                         <option value="-500">Definir (-500 kcal)</option>
                         <option value="0" selected>Mantener</option>
@@ -2641,10 +2641,10 @@
                 Indica qué discos colocar en cada lado de la barra
             </p>
 
-            <label class="calc-label">Peso objetivo (kg):</label>
+            <label for="d-peso" class="calc-label">Peso objetivo (kg):</label>
             <input type="number" class="calc-input" id="d-peso" placeholder="100" oninput="calcularDiscos()">
 
-            <label class="calc-label">Peso de la barra (kg):</label>
+            <label for="d-barra" class="calc-label">Peso de la barra (kg):</label>
             <select class="calc-select" id="d-barra" onchange="calcularDiscos()">
                 <option value="20" selected>20 kg (olímpica estándar)</option>
                 <option value="15">15 kg (olímpica mujer)</option>
@@ -2908,7 +2908,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">¿Sobre qué quieres preguntar?</label>
+                            <label for="temaWA" class="form-label">¿Sobre qué quieres preguntar?</label>
                             <select class="form-select" id="temaWA">
                                 <option value="rutina de entrenamiento">Rutina de entrenamiento</option>
                                 <option value="suplementación">Suplementación</option>
@@ -2944,7 +2944,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">¿De qué quieres hablar?</label>
+                            <label for="temaIG" class="form-label">¿De qué quieres hablar?</label>
                             <select class="form-select" id="temaIG">
                                 <option value="rutina de entrenamiento">Rutina de entrenamiento</option>
                                 <option value="suplementación">Suplementación</option>

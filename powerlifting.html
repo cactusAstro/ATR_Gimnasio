@@ -363,10 +363,10 @@
                     <h3>Tus datos</h3>
                     <p class="h-desc">Peso corporal del pesaje y total (sentadilla + banca + muerto).</p>
                     <div class="campos">
-                        <div class="campo ancho"><label>Sexo</label>
-                            <div class="segmentos" id="ptsSexo"><button type="button" aria-pressed="true" data-v="h">Hombre</button><button type="button" aria-pressed="false" data-v="m">Mujer</button></div></div>
-                        <div class="campo ancho"><label>Modalidad (para GL)</label>
-                            <div class="segmentos" id="ptsModo"><button type="button" aria-pressed="true" data-v="classic">Classic</button><button type="button" aria-pressed="false" data-v="equipado">Equipado</button></div></div>
+                        <div class="campo ancho"><label id="lbl-ptsSexo">Sexo</label>
+                            <div class="segmentos" id="ptsSexo" role="group" aria-labelledby="lbl-ptsSexo"><button type="button" aria-pressed="true" data-v="h">Hombre</button><button type="button" aria-pressed="false" data-v="m">Mujer</button></div></div>
+                        <div class="campo ancho"><label id="lbl-ptsModo">Modalidad (para GL)</label>
+                            <div class="segmentos" id="ptsModo" role="group" aria-labelledby="lbl-ptsModo"><button type="button" aria-pressed="true" data-v="classic">Classic</button><button type="button" aria-pressed="false" data-v="equipado">Equipado</button></div></div>
                         <div class="campo"><label for="ptsPeso">Peso corporal (kg)</label><input id="ptsPeso" type="number" inputmode="decimal" min="30" max="250" step="0.1" value="83"></div>
                         <div class="campo"><label for="ptsTotal">Total (kg)</label><input id="ptsTotal" type="number" inputmode="decimal" min="0" max="1500" step="2.5" value="600"></div>
                     </div>
@@ -399,8 +399,8 @@
                         <div class="campo"><label for="intS">Sentadilla (kg)</label><input id="intS" type="number" inputmode="decimal" step="2.5" value="180"></div>
                         <div class="campo"><label for="intB">Press de banca (kg)</label><input id="intB" type="number" inputmode="decimal" step="2.5" value="120"></div>
                         <div class="campo"><label for="intM">Peso muerto (kg)</label><input id="intM" type="number" inputmode="decimal" step="2.5" value="220"></div>
-                        <div class="campo"><label>Estrategia</label>
-                            <div class="segmentos" id="intEstr"><button type="button" aria-pressed="false" data-v="0">Segura</button><button type="button" aria-pressed="true" data-v="1">Normal</button><button type="button" aria-pressed="false" data-v="2">A por todas</button></div></div>
+                        <div class="campo"><label id="lbl-intEstr">Estrategia</label>
+                            <div class="segmentos" id="intEstr" role="group" aria-labelledby="lbl-intEstr"><button type="button" aria-pressed="false" data-v="0">Segura</button><button type="button" aria-pressed="true" data-v="1">Normal</button><button type="button" aria-pressed="false" data-v="2">A por todas</button></div></div>
                     </div>
                 </div>
                 <div class="h-salida">

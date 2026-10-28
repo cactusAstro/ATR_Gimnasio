@@ -285,10 +285,10 @@
                     <h3>Tus datos</h3>
                     <p class="h-desc">Gasto estimado con la fórmula de Mifflin-St Jeor.</p>
                     <div class="campos">
-                        <div class="campo ancho"><label>Fase</label>
-                            <div class="segmentos" id="nuFase"><button type="button" aria-pressed="true" data-v="vol">Volumen</button><button type="button" aria-pressed="false" data-v="man">Mantenimiento</button><button type="button" aria-pressed="false" data-v="def">Definición</button></div></div>
-                        <div class="campo ancho"><label>Sexo</label>
-                            <div class="segmentos" id="nuSexo"><button type="button" aria-pressed="true" data-v="h">Hombre</button><button type="button" aria-pressed="false" data-v="m">Mujer</button></div></div>
+                        <div class="campo ancho"><label id="lbl-nuFase">Fase</label>
+                            <div class="segmentos" id="nuFase" role="group" aria-labelledby="lbl-nuFase"><button type="button" aria-pressed="true" data-v="vol">Volumen</button><button type="button" aria-pressed="false" data-v="man">Mantenimiento</button><button type="button" aria-pressed="false" data-v="def">Definición</button></div></div>
+                        <div class="campo ancho"><label id="lbl-nuSexo">Sexo</label>
+                            <div class="segmentos" id="nuSexo" role="group" aria-labelledby="lbl-nuSexo"><button type="button" aria-pressed="true" data-v="h">Hombre</button><button type="button" aria-pressed="false" data-v="m">Mujer</button></div></div>
                         <div class="campo"><label for="nuPeso">Peso (kg)</label><input id="nuPeso" type="number" inputmode="decimal" value="75"></div>
                         <div class="campo"><label for="nuAltura">Altura (cm)</label><input id="nuAltura" type="number" inputmode="numeric" value="178"></div>
                         <div class="campo"><label for="nuEdad">Edad</label><input id="nuEdad" type="number" inputmode="numeric" value="22"></div>
