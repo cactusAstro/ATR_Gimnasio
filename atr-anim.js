@@ -258,9 +258,7 @@
         return idx;
     }
 
-    // ---------- 10) Menú: se esconde al bajar, vuelve al subir ----------
-    const nav = $('#atrNav'), menu = $('#atrMenu');
-    let ultimoY = scrollY;
+    // (10: el menú que se esconde al bajar va con la barra de pestañas y los botones, en atr-vidrio.js)
 
     // ---------- 11) Cinta: avanza despacio y siempre igual (animación CSS, fuera del hilo principal) ----------
     const cinta = $('.cinta-track');
@@ -313,7 +311,6 @@
         medirPilas(cartas);
         const hist = medirHistoria();
         const pie = medirPie();
-        const abierto = menu && (menu.classList.contains('open') || $('.dd.open'));
         // 2) escrituras
         cartas.forEach(([c, t]) => { pinta(c, 'transform', `scale(${(1 - t * .05).toFixed(4)})`); pinta(c, 'filter', `brightness(${(1 - t * .4).toFixed(3)})`); });
         if (hist) {
@@ -329,8 +326,6 @@
             const txt = 'SERIE ' + String(indiceSeccion(y) + 1).padStart(2, '0') + '/' + String(secciones.length).padStart(2, '0');
             if (txtInd.textContent !== txt) txtInd.textContent = txt;
         }
-        if (nav) nav.classList.toggle('oculta', !abierto && y > ultimoY && y > 400);
-        ultimoY = y;
     }
     addEventListener('scroll', pedir, { passive: true });
     addEventListener('resize', () => { medirPosiciones(); pedir(); }, { passive: true });
@@ -365,22 +360,5 @@
         }, { passive: true });
     })();
 
-    // ---------- 14) Móvil: los botones flotantes se apartan mientras lees ----------
-    (function botonesQueSeApartan() {
-        const movil = matchMedia('(max-width: 820px)');
-        const raiz = document.documentElement;
-        const chat = $('#chatVentana');
-        let ultimoY = scrollY, parado = 0;
-        const mostrar = () => raiz.classList.remove('fabs-fuera');
-        addEventListener('scroll', () => {
-            const y = scrollY, bajando = y > ultimoY + 4, subiendo = y < ultimoY - 4;
-            if (bajando || subiendo) ultimoY = y;
-            clearTimeout(parado);
-            if (!movil.matches || (chat && chat.classList.contains('activo'))) { mostrar(); return; }
-            if (bajando && y > 400) raiz.classList.add('fabs-fuera');
-            else if (subiendo) mostrar();
-            parado = setTimeout(mostrar, 1100);
-        }, { passive: true });
-        document.addEventListener('click', e => { if (e.target.closest('.btn-anadir-carrito')) mostrar(); });
-    })();
+    // (14: los botones flotantes se apartan junto con el resto de la interfaz, en atr-vidrio.js)
 })();

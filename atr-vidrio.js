@@ -406,7 +406,24 @@
     const secciones = enPortada ? PESTANAS.map(([id]) => document.getElementById(id)).filter(Boolean) : [];
     let tops = [], altoVentana = innerHeight;
     const medir = () => { altoVentana = innerHeight; tops = secciones.map(s => s.getBoundingClientRect().top + scrollY); };
-    let ultimoY = scrollY, pend = false;
+    // Al bajar, la interfaz se recoge entera y a la vez: el menú de arriba se esconde, la
+    // barra de pestañas se encoge y los botones flotantes se apartan; al subir vuelve entera.
+    // Reaccionan al mismo gesto en el mismo fotograma y en el CSS comparten muelle y duración,
+    // así que se mueven como una sola pieza. El sentido cuenta desde 10 px, aunque se baje despacio.
+    const navSup = document.getElementById('atrNav'), menuSup = document.getElementById('atrMenu'), chatVentana = document.getElementById('chatVentana');
+    let ancla = scrollY, sentido = 0, recogida = false;
+    function recoger(y) {
+        if (y - ancla > 10) { sentido = 1; ancla = y; }
+        else if (ancla - y > 10) { sentido = -1; ancla = y; }
+        const ocupado = (menuSup && (menuSup.classList.contains('open') || document.querySelector('.dd.open'))) || (chatVentana && chatVentana.classList.contains('activo'));
+        const si = !ocupado && sentido === 1 && y > 400;
+        if (si === recogida) return;
+        recogida = si;
+        if (navSup) navSup.classList.toggle('oculta', si);
+        barra.classList.toggle('mini', si);
+        raiz.classList.toggle('fabs-fuera', si);
+    }
+    let pend = false;
     function alDesplazar() {
         pend = false;
         const y = scrollY;
@@ -415,13 +432,9 @@
             secciones.forEach((s, i) => { if (tops[i] - y < altoVentana * .4) actual = s.id; });
             marcar(actual);
         }
-        if (!reduce) {
-            if (y > ultimoY + 6 && y > 240) barra.classList.add('mini');
-            else if (y < ultimoY - 6 || y < 240) barra.classList.remove('mini');
-        }
+        recoger(y);
         // arriba del todo la pantalla queda limpia: los botones flotantes aparecen al bajar
         document.body.classList.toggle('en-portada', y < 420);
-        ultimoY = y;
     }
     const pedirPestana = () => { if (!pend) { pend = true; requestAnimationFrame(alDesplazar); } };
     addEventListener('scroll', pedirPestana, { passive: true });

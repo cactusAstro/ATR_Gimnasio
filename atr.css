@@ -3540,3 +3540,56 @@ html body .atr-hero.hero-fuera .hero-title .l2, html body .atr-hero.hero-fuera .
 /* «Serie 01, 02…» sale del número que guarda cada etiqueta: un contador CSS no cruzaría
    las secciones que el navegador deja sin pintar (content-visibility) */
 html body .atr-eyebrow[data-serie]::before { content: 'Serie ' attr(data-serie) '  —' !important; }
+
+/* ============================================================
+   ESQUINAS CONTINUAS — como las de Apple (squircle)
+   Una esquina redonda normal es un cuarto de círculo pegado a dos rectas: la curvatura
+   cambia de golpe y el ojo nota el «codo». En las de Apple la curva entra poco a poco
+   desde el lado. Esa curva queda más ceñida que un arco del mismo radio, así que los
+   radios crecen ×1,5 para conservar el tamaño aparente de la esquina.
+   - Los círculos siguen siendo círculos (anillos, números, brillos, botones de radio).
+   - Los marcos del 3D se quedan con su arco: se recortan en cada fotograma y con un arco
+     la tarjeta gráfica lo hace casi gratis.
+   - Donde el navegador aún no la entiende (Safari, Firefox) quedan las esquinas de siempre.
+   ============================================================ */
+@supports (corner-shape: squircle) {
+    :root { --r-1: 42px; --r-2: 30px; --r-3: 21px; --r-4: 15px; }
+    html body *, html body *::before, html body *::after { corner-shape: squircle; }
+    html body .fab, html body .carrito-flotante, html body .chat-burbuja, html body .fab-timer.activo { border-radius: 24px; }
+    .barra-pestanas { border-radius: 36px; }
+    .barra-pestanas a, .lente-pestana { border-radius: 27px; }
+    .barra-pestanas.mini { border-radius: 30px; }
+    .barra-pestanas.mini .lente-pestana, .barra-pestanas.mini a { border-radius: 21px; }
+    html body .tabla .marca, html body .ficha .marca, html body .estado, html body .consejo-check .ico, html body .hueco,
+    html body .carrito-badge, html body .fab-badge, html body .kbd, html body kbd, html body .trofeos-prog { border-radius: 9px; }
+    html body .consejo-etq span { border-radius: 10px; }
+    html body .aviso::before { border-radius: 12px; }
+    html body .gym3d, html body .escena3d { border-radius: 28px; corner-shape: round; }
+    html body :is(#timerCerrar, .ruta .n, .timer-ring, .timer-ring i, .bizum-paso-num, .btn-eliminar, .cur-anillo, .cur-punto,
+        .escena3d-spinner, .gym3d-spinner, .luz, .onda, .siguiente i, .terminal-dot, .tiza-nube, .toast-logro .ico, input[type=radio], .rounded-circle),
+    html body :is(.btn-anadir-carrito, .btn-compromiso, .btn-confirmar-bizum, .btn-copiar, .btn-enviar, .btn-instagram, .btn-iron,
+        .btn-pago, .btn-publicar-checkin, .btn-publicar-post, .btn-whatsapp, .bx, .sup-btn, .timeline-item)::before,
+    html body :is(.barra .disco, .detalles summary)::after { corner-shape: round; }
+}
+
+/* ============================================================
+   MOVIMIENTO JUNTO — lo que se mueve a la vez comparte muelle y duración
+   Al bajar, el menú de arriba, la barra de pestañas y los botones flotantes se recogen
+   con el mismo gesto y el mismo muelle: se ven como una sola pieza (antes cada uno
+   llevaba su tiempo y los botones del móvil saltaban sin animación).
+   ============================================================ */
+html body .atr-nav { transition: width var(--t-resorte) var(--resorte), transform var(--t-resorte) var(--resorte), background .3s ease; }
+@media (max-width: 820px) {
+    .barra-pestanas { transition: left var(--t-resorte) var(--resorte), right var(--t-resorte) var(--resorte), height var(--t-resorte) var(--resorte), border-radius var(--t-resorte) var(--resorte); }
+    html body .fab, html body .carrito-flotante, html body .chat-widget {
+        transition: transform var(--t-resorte) var(--resorte), translate var(--t-resorte) var(--resorte), opacity .3s ease, box-shadow .3s ease;
+    }
+    /* al encogerse la barra, los iconos se achican y los rótulos se pliegan con ella, sin saltos */
+    .barra-pestanas a span { display: block; max-height: 12px; transition: opacity .2s ease, max-height var(--t-resorte) var(--resorte), margin var(--t-resorte) var(--resorte); }
+    .barra-pestanas.mini a span { display: block; opacity: 0; max-height: 0; margin-top: -3px; overflow: hidden; }
+    .barra-pestanas a svg { transition: transform var(--t-vivo) var(--resorte-vivo), width var(--t-resorte) var(--resorte), height var(--t-resorte) var(--resorte); }
+}
+@media (prefers-reduced-motion: reduce) {
+    html body .atr-nav, .barra-pestanas, .barra-pestanas a span, .barra-pestanas a svg,
+    html body .fab, html body .carrito-flotante, html body .chat-widget { transition: none; }
+}
