@@ -7,6 +7,7 @@ const archivos = [
     './index.html',
     './manifest.json',
     './atr.css',
+    './bootstrap-atr.css',
     './atr-barra.js',
     './atr-anim.js',
     './atr-vidrio.js',
