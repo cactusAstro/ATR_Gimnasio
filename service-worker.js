@@ -1,7 +1,7 @@
 // ATR-GYM · service worker
 // Red primero: siempre intenta la versión nueva y usa la caché solo sin conexión,
 // así nadie se queda atascado en una versión vieja de la web.
-const CACHE_NAME = 'atr-gym-v18';
+const CACHE_NAME = 'atr-gym-v19';
 const archivos = [
     './',
     './index.html',
