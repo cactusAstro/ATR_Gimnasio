@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culturismo — ATR-GYM</title>
+    <meta name="description" content="Culturismo: categorías, criterios de los jueces, poses obligatorias, hipertrofia basada en evidencia, planificador de volumen, nutrición por fases y preparación.">
+    <meta property="og:title" content="Culturismo — ATR-GYM">
+    <meta property="og:description" content="Culturismo: categorías, criterios de los jueces, poses obligatorias, hipertrofia basada en evidencia, planificador de volumen, nutrición por fases y preparación.">
+    <meta property="og:type" content="article">
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <link rel="canonical" href="https://cactusastro.github.io/ATR_GYM/culturismo.html">
+    <meta property="og:url" content="https://cactusastro.github.io/ATR_GYM/culturismo.html">
+    <meta property="og:site_name" content="ATR-GYM">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:image" content="https://cactusastro.github.io/ATR_GYM/img/compartir.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ATR-GYM · Entrena con método">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000000'/%3E%3Crect x='6' y='29' width='52' height='6' rx='3' fill='%23C7C7CC'/%3E%3Crect x='17' y='15' width='9' height='34' rx='2.5' fill='%23F5F5F7'/%3E%3Crect x='38' y='15' width='9' height='34' rx='2.5' fill='%23F5F5F7'/%3E%3Crect x='12' y='20' width='5' height='24' rx='2' fill='%238E8E93'/%3E%3Crect x='47' y='20' width='5' height='24' rx='2' fill='%238E8E93'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- la web usa la fuente del sistema (SF Pro en Apple); Inter Tight es su relevo en Android y Windows
+         y se carga sin bloquear el primer pintado. Las fuentes de los rótulos 3D las pide cada escena. -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="atr.css">
+    <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head>
+
+<body class="pagina-disciplina">
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <header class="atr-nav" id="atrNav">
+        <div class="atr-wrap">
+            <a class="navbar-brand" href="index.html" aria-label="ATR-GYM, ir al inicio">
+                <svg class="marca-ico" width="28" height="28" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M248,122H238V88a14,14,0,0,0-14-14H206V64a14,14,0,0,0-14-14H168a14,14,0,0,0-14,14v58H102V64A14,14,0,0,0,88,50H64A14,14,0,0,0,50,64V74H32A14,14,0,0,0,18,88v34H8a6,6,0,0,0,0,12H18v34a14,14,0,0,0,14,14H50v10a14,14,0,0,0,14,14H88a14,14,0,0,0,14-14V134h52v58a14,14,0,0,0,14,14h24a14,14,0,0,0,14-14V182h18a14,14,0,0,0,14-14V134h10a6,6,0,0,0,0-12ZM32,170a2,2,0,0,1-2-2V88a2,2,0,0,1,2-2H50v84Zm58,22a2,2,0,0,1-2,2H64a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2H88a2,2,0,0,1,2,2Zm104,0a2,2,0,0,1-2,2H168a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2h24a2,2,0,0,1,2,2Zm32-24a2,2,0,0,1-2,2H206V86h18a2,2,0,0,1,2,2Z"/></svg>
+                ATR-GYM
+            </a>
+            <span class="nav-here" id="navHere" aria-hidden="true">Culturismo</span>
+            <button class="atr-burger" id="atrBurger" aria-label="Abrir menú" aria-expanded="false" aria-controls="atrMenu">
+                <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M1 1h18M1 7h18M1 13h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+            </button>
+            <ul class="atr-links" id="atrMenu">
+                <li class="dd">
+                    <button class="dd-btn is-here" type="button" aria-expanded="false">Disciplinas <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <div class="dd-panel">
+                        <a href="powerlifting.html"><b>Powerlifting</b><span>Sentadilla, banca y peso muerto</span></a>
+                        <a href="boxeo.html"><b>Boxeo</b><span>Técnica, rounds y preparación</span></a>
+                        <a href="culturismo.html"><b>Culturismo</b><span>Hipertrofia, poses y nutrición</span></a>
+                    </div>
+                </li>
+                <li class="dd">
+                    <button class="dd-btn" type="button" aria-expanded="false">Empieza <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <div class="dd-panel">
+                        <a href="index.html#empieza"><b>Guía rápida</b><span>Itinerario de tres pasos</span></a>
+                        <a href="index.html#seccionTest"><b>Test de nivel</b><span>Seis preguntas para valorar tu nivel</span></a>
+                        <a href="index.html#faq"><b>Preguntas frecuentes</b><span>Dudas habituales al empezar</span></a>
+                    </div>
+                </li>
+                <li class="dd">
+                    <button class="dd-btn" type="button" aria-expanded="false">Entrena <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <div class="dd-panel">
+                        <a href="index.html#rutinas"><b>Rutinas</b><span>Mis sesiones semanales</span></a>
+                        <a href="index.html#calculadoras"><b>Calculadoras</b><span>1RM, macros y discos</span></a>
+                        <a href="index.html#marcas"><b>Marcas personales</b><span>Sentadilla, banca y peso muerto</span></a>
+                    </div>
+                </li>
+                <li class="dd">
+                    <button class="dd-btn" type="button" aria-expanded="false">Aprende <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <div class="dd-panel">
+                        <a href="index.html#suplementos"><b>Suplementos</b><span>Guías con evidencia científica</span></a>
+                        <a href="index.html#mitos"><b>Mitos</b><span>Ocho creencias revisadas con datos</span></a>
+                        <a href="index.html#ia"><b>Asistentes de IA</b><span>Instrucciones listas para usar</span></a>
+                    </div>
+                </li>
+                <li><a href="index.html#tienda">Planes</a></li>
+                <li><a class="cta" href="index.html#contacto">Contacto</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main>
+    <section class="pg-hero tema-tinta" id="top">
+        <div class="atr-wrap">
+            <p class="pg-migas"><a href="index.html">ATR-GYM</a> / Disciplinas / Culturismo</p>
+            <h1 class="pg-titulo" style="font-size: clamp(28px, 10.2vw, 178px)">Cultu<em>rismo</em></h1>
+            <div class="pg-hero-grid">
+                <div>
+                    <p class="pg-lead">Construir un físico <strong>músculo a músculo</strong>. Categorías, criterios de los jueces,
+                        poses, hipertrofia basada en evidencia, nutrición por fases y preparación para competir.</p>
+                    <div class="hero-ctas">
+                        <a class="btn-iron solid" href="#volumen">Planifica tu volumen</a>
+                        <a class="btn-iron ghost" href="#nutricion">Calcula tu fase</a>
+                    </div>
+                </div>
+                <div class="ficha" style="background:var(--tinta-2)">
+                    <span class="ficha-num">Lo que mira un juez</span>
+                    <div class="barras" style="margin-top:14px">
+                        <div><span>Masa muscular</span><span class="pista"><i style="--w:90%"></i></span><b>●●●</b></div>
+                        <div><span>Simetría</span><span class="pista"><i style="--w:82%"></i></span><b>●●●</b></div>
+                        <div><span>Proporción</span><span class="pista"><i style="--w:78%"></i></span><b>●●●</b></div>
+                        <div><span>Definición</span><span class="pista"><i style="--w:86%"></i></span><b>●●●</b></div>
+                        <div><span>Presentación</span><span class="pista"><i style="--w:70%"></i></span><b>●●</b></div>
+                    </div>
+                </div>
+            </div>
+            <div class="pg-datos">
+                <div><b>8</b><span>poses obligatorias</span></div>
+                <div><b>10-20</b><span>series por músculo y semana</span></div>
+                <div><b>1,6-2,2</b><span>g de proteína por kg</span></div>
+            </div>
+        </div>
+    </section>
+
+    <nav class="pg-indice" aria-label="En esta página">
+        <ol>
+            <li><a href="#gimnasio"><span>3D</span>Tu zona</a></li>
+            <li><a href="#que-es-cu"><span>01</span>Qué es</a></li>
+            <li><a href="#categorias-cu"><span>02</span>Categorías</a></li>
+            <li><a href="#juicio"><span>03</span>Cómo se juzga</a></li>
+            <li><a href="#poses"><span>04</span>Poses</a></li>
+            <li><a href="#hipertrofia"><span>05</span>Hipertrofia</a></li>
+            <li><a href="#volumen"><span>06</span>Volumen</a></li>
+            <li><a href="#rutinas-cu"><span>07</span>Rutinas</a></li>
+            <li><a href="#nutricion"><span>08</span>Nutrición</a></li>
+            <li><a href="#preparacion"><span>09</span>Preparación</a></li>
+            <li><a href="#natural"><span>10</span>Natural</a></li>
+            <li><a href="#faq-cu"><span>11</span>Preguntas</a></li>
+        </ol>
+    </nav>
+
+    <section class="gym3d-seccion tema-tinta" id="gimnasio" aria-label="El escenario del campeonato en 3D">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Instalaciones en 3D</p>
+            <h2 class="atr-h2">El escenario del campeonato</h2>
+            <p class="atr-sub reveal">Teatro con telón de terciopelo, suelo negro que refleja los focos, cabezas móviles, mesa de jueces, trofeos y el backstage. Arrastra para mirar alrededor y cambia de plano abajo. El gimnasio entero lo tienes en la <a href="index.html#gimnasio">portada</a>.</p>
+        </div>
+        <div class="gym3d-marco">
+            <div class="escena3d" data-escena="culturismo"></div>
+        </div>
+    </section>
+
+    <section id="que-es-cu">
+        <div class="atr-wrap col-texto">
+            <div>
+                <p class="atr-eyebrow reveal">Qué es</p>
+                <h2 class="atr-h2">Un deporte que se juzga con los ojos</h2>
+            </div>
+            <div class="reveal">
+                <p class="atr-sub" style="margin-bottom:24px">En culturismo no se mide cuánto levantas, sino el físico que
+                    has construido: <strong>tamaño, forma, simetría, definición</strong> y cómo lo presentas en el escenario.</p>
+                <p class="atr-sub" style="margin-bottom:28px">Detrás hay años de entrenamiento, alimentación planificada y una
+                    preparación final de meses. Y aunque no compitas, sus métodos son la base de cualquier entrenamiento
+                    para ganar músculo.</p>
+                <div class="cita-grande">No se construye en 12 semanas. Se construye en 12 años.<small>La realidad del culturismo natural</small></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="categorias-cu" class="tema-papel2">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Categorías</p>
+            <h2 class="atr-h2">No todo es ser enorme</h2>
+            <p class="atr-sub reveal">Las federaciones tienen varias categorías, cada una con un ideal de físico distinto.
+                Estas son las más habituales (nombres de la IFBB y federaciones similares).</p>
+            <div class="grid-3 reveal">
+                <div class="ficha destacada"><span class="ficha-num">Hombres</span><h3>Culturismo (Bodybuilding)</h3><p>La categoría original: máxima masa muscular con simetría, proporción y definición extrema. Se juzga con 8 poses y rutina libre.</p></div>
+                <div class="ficha"><span class="ficha-num">Hombres</span><h3>Classic Physique</h3><p>La estética de la era dorada: cintura estrecha, líneas limpias y un límite de peso según la altura. Poses clásicas, incluido el vacío abdominal.</p></div>
+                <div class="ficha"><span class="ficha-num">Hombres</span><h3>Men's Physique</h3><p>Tren superior en V, hombros anchos, abdomen marcado y cintura estrecha. Se compite en bañador tipo bermuda: las piernas pesan poco.</p></div>
+                <div class="ficha"><span class="ficha-num">Mujeres</span><h3>Bikini</h3><p>Físico atlético y equilibrado, con tono muscular moderado, glúteo redondeado y cintura marcada. Mucho peso de la presentación.</p></div>
+                <div class="ficha"><span class="ficha-num">Mujeres</span><h3>Wellness</h3><p>Más masa muscular en el tren inferior (glúteo y piernas) que en Bikini, manteniendo una parte superior proporcionada.</p></div>
+                <div class="ficha"><span class="ficha-num">Mujeres</span><h3>Figure · Physique</h3><p>Figure: espalda y hombros en V con definición. Physique: la categoría femenina más musculada, con poses derivadas del culturismo.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="juicio" class="tema-tinta">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Cómo se juzga</p>
+            <h2 class="atr-h2">Los cinco criterios del jurado</h2>
+            <p class="atr-sub reveal">Los jueces comparan a los atletas en fila, girando por cuartos (frente, perfil, espalda,
+                perfil) y en poses obligatorias. Estos son los criterios que se repiten en todas las federaciones.</p>
+            <div class="grid-3 reveal" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr))">
+                <div class="ficha"><span class="ficha-num">01</span><h3>Masa muscular</h3><p>Cantidad y densidad de músculo, sin que se pierda la forma. Más no siempre es mejor en todas las categorías.</p></div>
+                <div class="ficha"><span class="ficha-num">02</span><h3>Simetría</h3><p>Lado izquierdo y derecho equilibrados, y el tren superior acorde al inferior.</p></div>
+                <div class="ficha"><span class="ficha-num">03</span><h3>Proporción</h3><p>Relación entre grupos musculares y estructura ósea: hombros anchos, cintura estrecha, piernas acordes.</p></div>
+                <div class="ficha"><span class="ficha-num">04</span><h3>Definición</h3><p>Grasa corporal muy baja, separación entre músculos y estriaciones visibles. El famoso «acondicionamiento».</p></div>
+                <div class="ficha"><span class="ficha-num">05</span><h3>Presentación</h3><p>Posing, control, confianza, bronceado y la rutina libre. Un físico mal posado pierde puntos.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="poses">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Poses obligatorias</p>
+            <h2 class="atr-h2">Las ocho poses del culturismo</h2>
+            <p class="atr-sub reveal">Son las poses de comparación del culturismo masculino. Practícalas a diario durante la
+                preparación: aguantar un posing de 60 segundos cansa más de lo que parece.</p>
+            <ol class="poses reveal">
+                <li><h4>Doble bíceps de frente</h4><p>Brazos en alto, bíceps contraídos. Muestra brazos, hombros, cintura y piernas de frente.</p></li>
+                <li><h4>Dorsales de frente</h4><p>Abre los dorsales con los puños en la cintura para mostrar la amplitud en V.</p></li>
+                <li><h4>Pecho de perfil</h4><p>De lado, pecho alto y brazo cerrado. Muestra el grosor del pecho, el brazo y el gemelo.</p></li>
+                <li><h4>Doble bíceps de espalda</h4><p>De espaldas: dorsales, trapecios, lumbares, isquios y gemelos a la vista.</p></li>
+                <li><h4>Dorsales de espalda</h4><p>Apertura de dorsales vista desde atrás. Enseña la anchura de la espalda.</p></li>
+                <li><h4>Tríceps de perfil</h4><p>De lado, brazo estirado y contraído. Tríceps, hombro, pierna y abdomen lateral.</p></li>
+                <li><h4>Abdominales y pierna</h4><p>Manos detrás de la cabeza, abdomen contraído y una pierna adelantada tensa.</p></li>
+                <li><h4>Más muscular</h4><p>La pose de máxima contracción: trapecios, pecho y brazos. Varias versiones posibles.</p></li>
+            </ol>
+        </div>
+    </section>
+
+    <section id="hipertrofia" class="tema-papel2">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Hipertrofia</p>
+            <h2 class="atr-h2">Lo que dice la ciencia sobre crecer</h2>
+            <p class="atr-sub reveal">Seis principios con respaldo científico. Si tu rutina los cumple, el resto son detalles.</p>
+            <div class="grid-3 reveal">
+                <div class="ficha"><span class="ficha-num">Volumen</span><h3>10-20 series por músculo y semana</h3><p>Series efectivas, cerca del fallo. Principiantes crecen con menos; avanzados pueden necesitar la parte alta.</p></div>
+                <div class="ficha"><span class="ficha-num">Esfuerzo</span><h3>0-3 repeticiones en reserva</h3><p>Las series que crecen son las que se acercan al fallo. Muy lejos del fallo, el estímulo cae mucho.</p></div>
+                <div class="ficha"><span class="ficha-num">Frecuencia</span><h3>Cada músculo 2 veces por semana</h3><p>Repartir el volumen en dos sesiones suele funcionar mejor que meterlo todo en un día.</p></div>
+                <div class="ficha"><span class="ficha-num">Repeticiones</span><h3>De 5 a 30 funcionan</h3><p>En la práctica, 6-15 es cómodo y eficiente. Lo importante es acercarse al fallo con buena técnica.</p></div>
+                <div class="ficha"><span class="ficha-num">Recorrido</span><h3>Estiramiento bajo carga</h3><p>Recorrido completo, con énfasis en la parte estirada del músculo (sentadilla profunda, peso muerto rumano, press inclinado).</p></div>
+                <div class="ficha destacada"><span class="ficha-num">Progresión</span><h3>Más peso o más reps</h3><p>Apunta cada serie. Si en 4-6 semanas no subes nada, el problema es la comida, el sueño o el esfuerzo.</p></div>
+            </div>
+            <h3 class="reveal" style="font-family:var(--f-display);font-size:clamp(22px,2.6vw,32px);letter-spacing:-.03em;margin:56px 0 8px">Músculo que se puede ganar sin fármacos</h3>
+            <p class="atr-sub reveal" style="margin-bottom:20px">Estimación aproximada para un hombre que entrena y come bien (modelo de Lyle McDonald). En mujeres, aproximadamente la mitad.</p>
+            <div class="barras reveal">
+                <div><span>Año 1</span><span class="pista"><i style="--w:100%"></i></span><b>9-11 kg</b></div>
+                <div><span>Año 2</span><span class="pista"><i style="--w:50%"></i></span><b>4,5-5,5 kg</b></div>
+                <div><span>Año 3</span><span class="pista"><i style="--w:25%"></i></span><b>2-3 kg</b></div>
+                <div><span>Año 4 y más</span><span class="pista"><i style="--w:10%"></i></span><b>~1 kg</b></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="volumen" class="tema-tinta">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Herramienta · Volumen</p>
+            <h2 class="atr-h2">Planificador de series semanales</h2>
+            <p class="atr-sub reveal">Mueve cada barra con las series <strong>efectivas</strong> que haces a la semana para cada
+                músculo (series a 0-3 repeticiones del fallo). Se guarda en tu navegador.</p>
+            <div class="planificador reveal" id="planificador"></div>
+            <div class="plan-total reveal"><span>Series totales por semana: <b id="planSeries">0</b></span><span>Tiempo aproximado: <b id="planTiempo">0 h</b></span><span>Músculos en zona óptima: <b id="planOk">0</b></span></div>
+        </div>
+    </section>
+
+    <section id="rutinas-cu">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Rutinas</p>
+            <h2 class="atr-h2">Tres formas de repartir la semana</h2>
+            <p class="atr-sub reveal">Las tres funcionan. Elige la que puedas cumplir: la mejor rutina es la que haces.</p>
+            <div class="pestanas reveal" role="tablist">
+                <button class="pestana" role="tab" aria-selected="true" aria-controls="split-ppl">Push / Pull / Legs</button>
+                <button class="pestana" role="tab" aria-selected="false" aria-controls="split-tp">Torso / Pierna</button>
+                <button class="pestana" role="tab" aria-selected="false" aria-controls="split-fb">Full body</button>
+            </div>
+            <div class="panel-pestana grid-3" id="split-ppl" role="tabpanel">
+                <div class="ficha"><span class="ficha-num">Empuje · 2 veces por semana</span><h3>Push</h3><ul class="lista-check"><li>Press inclinado con mancuernas 3 × 6-10</li><li>Press de banca 3 × 6-10</li><li>Press militar 3 × 8-10</li><li>Elevaciones laterales 4 × 12-20</li><li>Extensión de tríceps en polea 3 × 10-15</li></ul></div>
+                <div class="ficha"><span class="ficha-num">Tirón · 2 veces por semana</span><h3>Pull</h3><ul class="lista-check"><li>Jalón al pecho 3 × 8-12</li><li>Remo con apoyo en pecho 3 × 8-12</li><li>Remo en polea baja 2 × 10-12</li><li>Face pull / deltoides posterior 3 × 12-20</li><li>Curl inclinado 3 × 10-15</li></ul></div>
+                <div class="ficha"><span class="ficha-num">Pierna · 2 veces por semana</span><h3>Legs</h3><ul class="lista-check"><li>Sentadilla o prensa 3 × 6-10</li><li>Peso muerto rumano 3 × 8-10</li><li>Extensión de cuádriceps 3 × 10-15</li><li>Curl femoral sentado 3 × 10-15</li><li>Gemelo de pie 4 × 10-15</li></ul></div>
+            </div>
+            <div class="panel-pestana grid-2" id="split-tp" role="tabpanel" hidden>
+                <div class="ficha"><span class="ficha-num">Lunes y jueves</span><h3>Torso</h3><ul class="lista-check"><li>Press de banca 3 × 6-8</li><li>Remo con barra 3 × 8-10</li><li>Press inclinado con mancuernas 3 × 8-12</li><li>Jalón al pecho 3 × 8-12</li><li>Elevaciones laterales 3 × 12-20</li><li>Curl + extensión de tríceps 2 × 10-15</li></ul></div>
+                <div class="ficha"><span class="ficha-num">Martes y viernes</span><h3>Pierna</h3><ul class="lista-check"><li>Sentadilla 3 × 6-8</li><li>Peso muerto rumano 3 × 8-10</li><li>Prensa 3 × 10-12</li><li>Curl femoral 3 × 10-15</li><li>Extensión de cuádriceps 2 × 12-15</li><li>Gemelo 4 × 10-15 · Abdomen 3 series</li></ul></div>
+            </div>
+            <div class="panel-pestana grid-3" id="split-fb" role="tabpanel" hidden>
+                <div class="ficha"><span class="ficha-num">Día A</span><h3>Full body A</h3><ul class="lista-check"><li>Sentadilla 3 × 6-8</li><li>Press de banca 3 × 6-8</li><li>Remo con barra 3 × 8-10</li><li>Elevaciones laterales 2 × 15</li></ul></div>
+                <div class="ficha"><span class="ficha-num">Día B</span><h3>Full body B</h3><ul class="lista-check"><li>Peso muerto rumano 3 × 8</li><li>Press militar 3 × 8</li><li>Jalón al pecho 3 × 10</li><li>Curl femoral 2 × 12</li></ul></div>
+                <div class="ficha destacada"><span class="ficha-num">Para quién</span><h3>Ideal para empezar</h3><p>3 días por semana alternando A y B. Cada músculo se entrena 2-3 veces con poco volumen por sesión: perfecto para aprender la técnica.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="nutricion" class="tema-papel2">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Herramienta · Nutrición</p>
+            <h2 class="atr-h2">Calorías y macros según tu fase</h2>
+            <p class="atr-sub reveal">Volumen para construir, definición para mostrar lo construido. La clave es el
+                <strong>ritmo semanal</strong>: ni tan rápido que ganes grasa o pierdas músculo, ni tan lento que no avances.</p>
+            <div class="herramienta reveal">
+                <div>
+                    <h3>Tus datos</h3>
+                    <p class="h-desc">Gasto estimado con la fórmula de Mifflin-St Jeor.</p>
+                    <div class="campos">
+                        <div class="campo ancho"><label id="lbl-nuFase">Fase</label>
+                            <div class="segmentos" id="nuFase" role="group" aria-labelledby="lbl-nuFase"><button type="button" aria-pressed="true" data-v="vol">Volumen</button><button type="button" aria-pressed="false" data-v="man">Mantenimiento</button><button type="button" aria-pressed="false" data-v="def">Definición</button></div></div>
+                        <div class="campo ancho"><label id="lbl-nuSexo">Sexo</label>
+                            <div class="segmentos" id="nuSexo" role="group" aria-labelledby="lbl-nuSexo"><button type="button" aria-pressed="true" data-v="h">Hombre</button><button type="button" aria-pressed="false" data-v="m">Mujer</button></div></div>
+                        <div class="campo"><label for="nuPeso">Peso (kg)</label><input id="nuPeso" type="number" inputmode="decimal" value="75"></div>
+                        <div class="campo"><label for="nuAltura">Altura (cm)</label><input id="nuAltura" type="number" inputmode="numeric" value="178"></div>
+                        <div class="campo"><label for="nuEdad">Edad</label><input id="nuEdad" type="number" inputmode="numeric" value="22"></div>
+                        <div class="campo"><label for="nuAct">Actividad</label><select id="nuAct"><option value="1.375">Entreno 2-3 días</option><option value="1.55" selected>Entreno 4-5 días</option><option value="1.725">Entreno 6 días + activo</option></select></div>
+                        <div class="campo ancho"><label for="nuNivel">Experiencia</label><select id="nuNivel"><option value="0">Menos de 1 año</option><option value="1" selected>1-3 años</option><option value="2">Más de 3 años</option></select></div>
+                    </div>
+                </div>
+                <div class="h-salida">
+                    <span class="h-etiqueta">Calorías diarias objetivo</span>
+                    <div class="h-grande" id="nuKcal">—</div>
+                    <div class="h-filas">
+                        <div><span>Ritmo objetivo</span><b id="nuRitmo">—</b></div>
+                        <div><span>Proteína</span><b id="nuP">—</b></div>
+                        <div><span>Grasas</span><b id="nuG">—</b></div>
+                        <div><span>Carbohidratos</span><b id="nuC">—</b></div>
+                    </div>
+                    <p class="h-nota">Punto de partida: pésate a diario, mira la media semanal y ajusta ±100-150 kcal si no vas al ritmo objetivo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="preparacion">
+        <div class="atr-wrap col-texto">
+            <div>
+                <p class="atr-eyebrow reveal">Preparación</p>
+                <h2 class="atr-h2">Camino a la tarima</h2>
+                <p class="atr-sub">Una preparación seria dura de 16 a 24 semanas de definición, y antes de eso, años de
+                    fase de mejora. Estos son los pasos.</p>
+                <a class="btn-iron solid" href="index.html#conecta">Te ayudo con tu preparación</a>
+            </div>
+            <div>
+                <ol class="pasos reveal">
+                    <li><div><h4>Fase de mejora (off-season)</h4><p>Meses o años ganando músculo con un superávit moderado. Llegar a la definición con más músculo es lo que decide la posición.</p></div></li>
+                    <li><div><h4>Definición · 16-24 semanas</h4><p>Pérdida del 0,5-1 % del peso por semana, proteína alta y el entrenamiento pesado de siempre para conservar el músculo.</p></div></li>
+                    <li><div><h4>Posing desde el primer día</h4><p>Practica las poses a diario y graba tu rutina libre. Pide opinión a alguien con experiencia en jueceo.</p></div></li>
+                    <li><div><h4>Semana final (peak week)</h4><p>Pequeños ajustes de carbohidratos, sodio y agua para verte lleno y seco. Sin extremos: cortar el agua o usar diuréticos es peligroso y suele empeorar el físico.</p></div></li>
+                    <li><div><h4>El día de la competición</h4><p>Bronceado de competición, comidas pequeñas y conocidas, calentamiento con bombeo antes de salir y disfrutar del escenario.</p></div></li>
+                    <li><div><h4>Después de competir</h4><p>Vuelve al mantenimiento de forma progresiva durante varias semanas. El efecto rebote se controla, no se sufre.</p></div></li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <section id="natural" class="tema-tinta">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Natural</p>
+            <h2 class="atr-h2">Hablemos claro de los fármacos</h2>
+            <p class="atr-sub reveal">Muchos físicos de redes sociales y de categorías profesionales no son naturales.
+                Compararte con ellos es la forma más rápida de frustrarte.</p>
+            <div class="grid-2 reveal">
+                <div class="aviso serio" style="margin:0"><p><strong>Los esteroides anabolizantes y otras sustancias para ganar músculo tienen riesgos
+                    serios</strong>: cardiovasculares, hormonales (infertilidad, supresión de la testosterona propia),
+                    hepáticos y psicológicos. Su compra sin receta es ilegal. Esta web no asesora sobre su uso.</p></div>
+                <div class="ficha">
+                    <span class="ficha-num">Qué hacer en su lugar</span>
+                    <h3>El camino natural funciona, pero es lento</h3>
+                    <ul class="lista-check">
+                        <li>Compite en federaciones <strong>naturales con control antidopaje</strong> si quieres tarima.</li>
+                        <li>Mide tu progreso contra ti, no contra fotos de internet.</li>
+                        <li>Duerme 7-9 horas: es el mejor «suplemento» legal que existe.</li>
+                        <li>Revisa las <a href="index.html#suplementos">guías de suplementos</a> que sí tienen respaldo.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq-cu" class="tema-papel2">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Preguntas frecuentes</p>
+            <h2 class="atr-h2">Dudas de culturismo</h2>
+            <div class="detalles reveal">
+                <details><summary>¿Puedo ganar músculo y perder grasa a la vez?</summary><p>Sí, sobre todo si empiezas, si vuelves después de un parón o si tienes bastante grasa. Se llama recomposición. Cuando ya llevas años, lo eficiente es alternar fases de volumen y definición.</p></details>
+                <details><summary>¿Cuánto tiempo necesito para competir?</summary><p>Lo normal es tener al menos 3-5 años de entrenamiento serio antes de subir a una tarima con opciones. Y la preparación final dura 4-6 meses.</p></details>
+                <details><summary>¿Máquinas o peso libre para crecer?</summary><p>Los dos funcionan. Las máquinas permiten acercarse al fallo con seguridad y aislar músculos; el peso libre exige más estabilidad. Una buena rutina mezcla ambos.</p></details>
+                <details><summary>¿Hace falta comer cada 3 horas?</summary><p>No. Lo que manda son las calorías y la proteína del día. Repartir la proteína en 3-5 tomas de 25-40 g es práctico, pero no es obligatorio.</p></details>
+                <details><summary>¿El cardio me quita músculo?</summary><p>En cantidades moderadas, no. En definición es una herramienta útil para aumentar el gasto sin recortar tanta comida.</p></details>
+            </div>
+        </div>
+    </section>
+
+    <section class="tema-tinta" style="padding-top:0;padding-bottom:0">
+        <div class="atr-wrap"><a class="siguiente" href="powerlifting.html"><span><small>Siguiente disciplina</small><strong>Powerlifting</strong></span><i>→</i></a></div>
+    </section>
+    </main>
+
+    <footer class="atr-footer">
+        <div class="atr-wrap">
+            <div class="foot-top">
+                <div class="foot-brand">
+                    <a class="navbar-brand" href="index.html"><svg class="marca-ico" width="28" height="28" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M248,122H238V88a14,14,0,0,0-14-14H206V64a14,14,0,0,0-14-14H168a14,14,0,0,0-14,14v58H102V64A14,14,0,0,0,88,50H64A14,14,0,0,0,50,64V74H32A14,14,0,0,0,18,88v34H8a6,6,0,0,0,0,12H18v34a14,14,0,0,0,14,14H50v10a14,14,0,0,0,14,14H88a14,14,0,0,0,14-14V134h52v58a14,14,0,0,0,14,14h24a14,14,0,0,0,14-14V182h18a14,14,0,0,0,14-14V134h10a6,6,0,0,0,0-12ZM32,170a2,2,0,0,1-2-2V88a2,2,0,0,1,2-2H50v84Zm58,22a2,2,0,0,1-2,2H64a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2H88a2,2,0,0,1,2,2Zm104,0a2,2,0,0,1-2,2H168a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2h24a2,2,0,0,1,2,2Zm32-24a2,2,0,0,1-2,2H206V86h18a2,2,0,0,1,2,2Z"/></svg> ATR-GYM</a>
+                    <p>Entrenamiento de fuerza con método. Powerlifting, boxeo y culturismo explicados con rigor.</p>
+                </div>
+                <div class="foot-links foot-links-4">
+                    <div><h5>Disciplinas</h5><ul><li><a href="powerlifting.html">Powerlifting</a></li><li><a href="boxeo.html">Boxeo</a></li><li><a href="culturismo.html">Culturismo</a></li></ul></div>
+                    <div><h5>Entrena</h5><ul><li><a href="index.html#rutinas">Rutinas</a></li><li><a href="index.html#seccionTest">Test de nivel</a></li><li><a href="index.html#calculadoras">Calculadoras</a></li><li><a href="index.html#marcas">Marcas personales</a></li></ul></div>
+                    <div><h5>Aprende</h5><ul><li><a href="index.html#suplementos">Suplementos</a></li><li><a href="index.html#mitos">Mitos</a></li><li><a href="index.html#faq">Preguntas</a></li><li><a href="index.html#glosario">Abreviaturas</a></li></ul></div>
+                    <div><h5>Conecta</h5><ul><li><a href="index.html#tienda">Planes</a></li><li><a href="index.html#historia">Mi historia</a></li><li><a href="index.html#conecta">Contacto</a></li><li><a href="index.html#contacto">Contacto</a></li></ul></div>
+                </div>
+            </div>
+            <div class="canal-rapido" style="margin:30px 0 0;">
+                <a class="canal-chip wa" href="https://wa.me/34635816502" target="_blank" rel="noopener">635 81 65 02</a>
+                <a class="canal-chip ig" href="https://www.instagram.com/astro10__/" target="_blank" rel="noopener">@astro10__</a>
+                <a class="canal-chip mail" href="mailto:ivanib2007@icloud.com">ivanib2007@icloud.com</a>
+            </div>
+            <div class="foot-mega" aria-hidden="true"><span>A</span><span>T</span><span>R</span><span>—</span><span>G</span><span>Y</span><span>M</span></div>
+            <div class="foot-bottom">
+                <span>© <span id="anioActual">2026</span> Iván · ATR-GYM. Todos los derechos reservados.</span>
+                <span class="v">v6.0 · TERUEL</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="atr-base.js"></script>
+    <script>
+        // ============================================
+        // Culturismo — planificador de volumen y nutrición por fases
+        // ============================================
+        (function () {
+            'use strict';
+            const $ = id => document.getElementById(id);
+            const num = ATR.num;
+
+            // ---- Planificador de series semanales
+            const MUSCULOS = [
+                ['pecho', 'Pecho', 12], ['espalda', 'Espalda', 14], ['hombro', 'Hombro lateral', 12], ['posterior', 'Deltoides posterior', 10],
+                ['biceps', 'Bíceps', 10], ['triceps', 'Tríceps', 10], ['cuadriceps', 'Cuádriceps', 12], ['isquios', 'Isquiosurales', 10],
+                ['gluteo', 'Glúteo', 10], ['gemelo', 'Gemelo', 10], ['abdomen', 'Abdomen', 10]
+            ];
+            let guardado = {};
+            try { guardado = JSON.parse(localStorage.getItem('atr-volumen') || '{}'); } catch (e) { }
+            const cont = $('planificador');
+            cont.innerHTML = MUSCULOS.map(([id, nombre, def]) => {
+                const v = guardado[id] ?? def;
+                return `<div class="plan-fila"><span>${nombre}</span><input type="range" min="0" max="30" value="${v}" data-m="${id}" aria-label="Series semanales de ${nombre}"><b>${v}</b><span class="estado"></span></div>`;
+            }).join('');
+            function evaluar() {
+                let total = 0, ok = 0; const datos = {};
+                cont.querySelectorAll('.plan-fila').forEach(f => {
+                    const r = f.querySelector('input'), v = +r.value, e = f.querySelector('.estado');
+                    f.querySelector('b').textContent = v;
+                    total += v; datos[r.dataset.m] = v;
+                    const [cls, txt] = v < 10 ? ['bajo', 'Poco'] : v <= 20 ? ['optimo', 'Óptimo'] : ['alto', 'Mucho'];
+                    e.className = 'estado ' + cls; e.textContent = txt;
+                    if (cls === 'optimo') ok++;
+                });
+                $('planSeries').textContent = total;
+                const min = total * 2.5;
+                $('planTiempo').textContent = (min / 60).toFixed(1).replace('.', ',') + ' h/semana';
+                $('planOk').textContent = ok + ' de ' + MUSCULOS.length;
+                try { localStorage.setItem('atr-volumen', JSON.stringify(datos)); } catch (e) { }
+            }
+            cont.addEventListener('input', evaluar);
+            evaluar();
+
+            // ---- Nutrición por fases
+            function segmento(id) {
+                const g = $(id);
+                g.addEventListener('click', e => {
+                    const b = e.target.closest('button'); if (!b) return;
+                    g.querySelectorAll('button').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+                    nutricion();
+                });
+                return () => g.querySelector('[aria-pressed="true"]').dataset.v;
+            }
+            const fase = segmento('nuFase'), sexo = segmento('nuSexo');
+            // ritmo semanal en % del peso según fase y experiencia
+            const RITMO = { vol: [0.5, 0.3, 0.2], man: [0, 0, 0], def: [-0.8, -0.7, -0.6] };
+            function nutricion() {
+                const p = num($('nuPeso').value), a = num($('nuAltura').value), e = num($('nuEdad').value);
+                if (!(p > 30 && a > 120 && e > 10)) { ['nuKcal', 'nuRitmo', 'nuP', 'nuG', 'nuC'].forEach(i => $(i).textContent = '—'); return; }
+                const tmb = 10 * p + 6.25 * a - 5 * e + (sexo() === 'h' ? 5 : -161);
+                const gasto = tmb * num($('nuAct').value);
+                const pct = RITMO[fase()][+$('nuNivel').value];
+                const kgSemana = p * pct / 100;
+                const kcal = Math.round((gasto + kgSemana * 7700 / 7) / 10) * 10;
+                const prot = Math.round(p * (fase() === 'def' ? 2.2 : 1.8));
+                const grasa = Math.round(Math.max(p * 0.8, kcal * 0.22 / 9));
+                const carbos = Math.max(0, Math.round((kcal - prot * 4 - grasa * 9) / 4));
+                $('nuKcal').innerHTML = kcal.toLocaleString('es-ES') + '<small>kcal</small>';
+                $('nuRitmo').textContent = pct === 0 ? 'Mantener el peso' : (kgSemana > 0 ? '+' : '') + kgSemana.toFixed(2).replace('.', ',') + ' kg/semana';
+                $('nuP').textContent = prot + ' g';
+                $('nuG').textContent = grasa + ' g';
+                $('nuC').textContent = carbos + ' g';
+            }
+            ['nuPeso', 'nuAltura', 'nuEdad', 'nuAct', 'nuNivel'].forEach(i => $(i).addEventListener('input', nutricion));
+            nutricion();
+        })();
+    </script>
+    <script src="atr-barra.js"></script>
+    <script src="atr-anim.js"></script>
+    <script src="atr-vidrio.js"></script>
+    <script defer src="atr-3d-motor.js"></script>
+    <script defer src="atr-3d-culturismo.js"></script>
+</body>
+
+</html>

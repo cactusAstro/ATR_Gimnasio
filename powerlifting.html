@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Powerlifting — ATR-GYM</title>
+    <meta name="description" content="Powerlifting: reglamento, técnica de sentadilla, banca y peso muerto, categorías IPF, calculadora de puntos DOTS e IPF GL, selección de intentos, RPE y programación.">
+    <meta property="og:title" content="Powerlifting — ATR-GYM">
+    <meta property="og:description" content="Powerlifting: reglamento, técnica de sentadilla, banca y peso muerto, categorías IPF, calculadora de puntos DOTS e IPF GL, selección de intentos, RPE y programación.">
+    <meta property="og:type" content="article">
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <link rel="canonical" href="https://cactusastro.github.io/ATR_GYM/powerlifting.html">
+    <meta property="og:url" content="https://cactusastro.github.io/ATR_GYM/powerlifting.html">
+    <meta property="og:site_name" content="ATR-GYM">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:image" content="https://cactusastro.github.io/ATR_GYM/img/compartir.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ATR-GYM · Entrena con método">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000000'/%3E%3Crect x='6' y='29' width='52' height='6' rx='3' fill='%23C7C7CC'/%3E%3Crect x='17' y='15' width='9' height='34' rx='2.5' fill='%23F5F5F7'/%3E%3Crect x='38' y='15' width='9' height='34' rx='2.5' fill='%23F5F5F7'/%3E%3Crect x='12' y='20' width='5' height='24' rx='2' fill='%238E8E93'/%3E%3Crect x='47' y='20' width='5' height='24' rx='2' fill='%238E8E93'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- la web usa la fuente del sistema (SF Pro en Apple); Inter Tight es su relevo en Android y Windows
+         y se carga sin bloquear el primer pintado. Las fuentes de los rótulos 3D las pide cada escena. -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="atr.css">
+    <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head>
+
+<body class="pagina-disciplina">
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <header class="atr-nav" id="atrNav">
+        <div class="atr-wrap">
+            <a class="navbar-brand" href="index.html" aria-label="ATR-GYM, ir al inicio">
+                <svg class="marca-ico" width="28" height="28" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M248,122H238V88a14,14,0,0,0-14-14H206V64a14,14,0,0,0-14-14H168a14,14,0,0,0-14,14v58H102V64A14,14,0,0,0,88,50H64A14,14,0,0,0,50,64V74H32A14,14,0,0,0,18,88v34H8a6,6,0,0,0,0,12H18v34a14,14,0,0,0,14,14H50v10a14,14,0,0,0,14,14H88a14,14,0,0,0,14-14V134h52v58a14,14,0,0,0,14,14h24a14,14,0,0,0,14-14V182h18a14,14,0,0,0,14-14V134h10a6,6,0,0,0,0-12ZM32,170a2,2,0,0,1-2-2V88a2,2,0,0,1,2-2H50v84Zm58,22a2,2,0,0,1-2,2H64a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2H88a2,2,0,0,1,2,2Zm104,0a2,2,0,0,1-2,2H168a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2h24a2,2,0,0,1,2,2Zm32-24a2,2,0,0,1-2,2H206V86h18a2,2,0,0,1,2,2Z"/></svg>
+                ATR-GYM
+            </a>
+            <span class="nav-here" id="navHere" aria-hidden="true">Powerlifting</span>
+            <button class="atr-burger" id="atrBurger" aria-label="Abrir menú" aria-expanded="false" aria-controls="atrMenu">
+                <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M1 1h18M1 7h18M1 13h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+            </button>
+            <ul class="atr-links" id="atrMenu">
+                <li class="dd">
+                    <button class="dd-btn is-here" type="button" aria-expanded="false">Disciplinas <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <div class="dd-panel">
+                        <a href="powerlifting.html"><b>Powerlifting</b><span>Sentadilla, banca y peso muerto</span></a>
+                        <a href="boxeo.html"><b>Boxeo</b><span>Técnica, rounds y preparación</span></a>
+                        <a href="culturismo.html"><b>Culturismo</b><span>Hipertrofia, poses y nutrición</span></a>
+                    </div>
+                </li>
+                <li class="dd">
+                    <button class="dd-btn" type="button" aria-expanded="false">Empieza <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <div class="dd-panel">
+                        <a href="index.html#empieza"><b>Guía rápida</b><span>Itinerario de tres pasos</span></a>
+                        <a href="index.html#seccionTest"><b>Test de nivel</b><span>Seis preguntas para valorar tu nivel</span></a>
+                        <a href="index.html#faq"><b>Preguntas frecuentes</b><span>Dudas habituales al empezar</span></a>
+                    </div>
+                </li>
+                <li class="dd">
+                    <button class="dd-btn" type="button" aria-expanded="false">Entrena <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <div class="dd-panel">
+                        <a href="index.html#rutinas"><b>Rutinas</b><span>Mis sesiones semanales</span></a>
+                        <a href="index.html#calculadoras"><b>Calculadoras</b><span>1RM, macros y discos</span></a>
+                        <a href="index.html#marcas"><b>Marcas personales</b><span>Sentadilla, banca y peso muerto</span></a>
+                    </div>
+                </li>
+                <li class="dd">
+                    <button class="dd-btn" type="button" aria-expanded="false">Aprende <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <div class="dd-panel">
+                        <a href="index.html#suplementos"><b>Suplementos</b><span>Guías con evidencia científica</span></a>
+                        <a href="index.html#mitos"><b>Mitos</b><span>Ocho creencias revisadas con datos</span></a>
+                        <a href="index.html#ia"><b>Asistentes de IA</b><span>Instrucciones listas para usar</span></a>
+                    </div>
+                </li>
+                <li><a href="index.html#tienda">Planes</a></li>
+                <li><a class="cta" href="index.html#contacto">Contacto</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main>
+    <section class="pg-hero tema-tinta" id="top">
+        <div class="atr-wrap">
+            <p class="pg-migas"><a href="index.html">ATR-GYM</a> / Disciplinas / Powerlifting</p>
+            <h1 class="pg-titulo" style="font-size: clamp(26px, 9.3vw, 164px)">Power<em>lifting</em></h1>
+            <div class="pg-hero-grid">
+                <div>
+                    <p class="pg-lead">Fuerza máxima en tres movimientos: <strong>sentadilla, press de banca y peso muerto</strong>.
+                        Reglamento, técnica, categorías, programación y herramientas para competir con criterio.</p>
+                    <div class="hero-ctas">
+                        <a class="btn-iron solid" href="#puntuacion">Calcula tus puntos</a>
+                        <a class="btn-iron ghost" href="#movimientos">Los tres movimientos</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="jueces" id="juecesHero" aria-label="Luces de los tres jueces">
+                        <span class="luz"></span><span class="luz"></span><span class="luz"></span>
+                    </div>
+                    <p class="jueces-leyenda" id="juecesHeroTxt">Esperando al juez central…</p>
+                </div>
+            </div>
+            <div class="pg-datos">
+                <div><b>3</b><span>levantamientos</span></div>
+                <div><b>9</b><span>intentos en competición</span></div>
+                <div><b>1</b><span>total que decide</span></div>
+            </div>
+        </div>
+    </section>
+
+    <nav class="pg-indice" aria-label="En esta página">
+        <ol>
+            <li><a href="#gimnasio"><span>3D</span>Tu zona</a></li>
+            <li><a href="#que-es"><span>01</span>Qué es</a></li>
+            <li><a href="#competicion"><span>02</span>La competición</a></li>
+            <li><a href="#movimientos"><span>03</span>Los movimientos</a></li>
+            <li><a href="#categorias"><span>04</span>Categorías</a></li>
+            <li><a href="#puntuacion"><span>05</span>Puntos DOTS/GL</a></li>
+            <li><a href="#intentos"><span>06</span>Intentos</a></li>
+            <li><a href="#rpe"><span>07</span>RPE</a></li>
+            <li><a href="#programacion"><span>08</span>Programación</a></li>
+            <li><a href="#equipo"><span>09</span>Equipamiento</a></li>
+            <li><a href="#empezar"><span>10</span>Empezar a competir</a></li>
+            <li><a href="#faq-pl"><span>11</span>Preguntas</a></li>
+        </ol>
+    </nav>
+
+    <section class="gym3d-seccion tema-tinta" id="gimnasio" aria-label="La tarima de competición en 3D">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Instalaciones en 3D</p>
+            <h2 class="atr-h2">La tarima de competición</h2>
+            <p class="atr-sub reveal">Rack con 250 kg en discos calibrados, jueces con sus mandos, luces de decisión que votan de verdad y el marcador contando el minuto. Arrastra para mirar alrededor y cambia de plano abajo. El gimnasio entero lo tienes en la <a href="index.html#gimnasio">portada</a>.</p>
+        </div>
+        <div class="gym3d-marco">
+            <div class="escena3d" data-escena="powerlifting"></div>
+        </div>
+    </section>
+
+    <section id="que-es">
+        <div class="atr-wrap col-texto">
+            <div>
+                <p class="atr-eyebrow reveal">Qué es</p>
+                <h2 class="atr-h2">Un deporte de fuerza, no de estética</h2>
+            </div>
+            <div class="reveal">
+                <p class="atr-sub" style="margin-bottom:24px">En powerlifting compites en <strong>sentadilla, press de banca y peso muerto</strong>. Tienes
+                    tres intentos en cada movimiento y tu mejor intento válido de cada uno se suma en el <strong>total</strong>.
+                    Gana quien más total levanta dentro de su categoría de peso corporal y edad.</p>
+                <p class="atr-sub" style="margin-bottom:28px">No se juzga el físico: se juzga si el levantamiento cumple el
+                    reglamento. Por eso la técnica de competición (profundidad, pausa, bloqueo) importa tanto como la fuerza.</p>
+                <div class="grid-3">
+                    <div class="ficha destacada"><span class="ficha-num">Powerlifting</span><h3>Fuerza máxima</h3><p>Sentadilla, banca y peso muerto. Movimientos lentos y pesados, intentos a 1 repetición.</p></div>
+                    <div class="ficha"><span class="ficha-num">Halterofilia</span><h3>Potencia y velocidad</h3><p>Arrancada y dos tiempos. Es el levantamiento olímpico: técnica explosiva por encima de la cabeza.</p></div>
+                    <div class="ficha"><span class="ficha-num">Strongman</span><h3>Fuerza con objetos</h3><p>Piedras, yugos, troncos y arrastres. Mezcla fuerza máxima, resistencia y agarre.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="competicion" class="tema-papel2">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">La competición</p>
+            <h2 class="atr-h2">Cómo es un día de competición</h2>
+            <p class="atr-sub reveal">El orden es siempre el mismo: sentadilla, press de banca y peso muerto. Estas son
+                las fases y las reglas que más afectan a tu resultado.</p>
+            <ol class="pasos reveal">
+                <li><div><h4>Pesaje</h4><p>Empieza unas 2 horas antes de tu sesión y dura 1 h 30 min. Ahí comunicas tus
+                    <strong>alturas de rack</strong> (sentadilla y banca) y tu <strong>primer intento</strong> de cada movimiento.</p></div></li>
+                <li><div><h4>Calentamiento por grupos</h4><p>Los atletas se ordenan en grupos (flights) y por peso de intento.
+                    Calienta con la vista puesta en cuándo te toca: 5-6 intentos antes de tu turno deberías estar con tu última aproximación.</p></div></li>
+                <li><div><h4>Tres intentos por movimiento</h4><p>Cuando la barra está cargada y te nombran tienes <strong>1 minuto</strong>
+                    para empezar. Después de cada intento, tienes 1 minuto para comunicar el siguiente, que nunca puede ser menor.</p></div></li>
+                <li><div><h4>Tres jueces, dos luces blancas</h4><p>Cada juez enciende una luz blanca (válido) o roja (nulo).
+                    Con <strong>dos o tres blancas</strong> el intento cuenta. Las tarjetas de color indican el motivo del nulo.</p></div></li>
+                <li><div><h4>Total y clasificación</h4><p>Se suma el mejor intento válido de cada movimiento. Si fallas los tres
+                    intentos de un movimiento, quedas fuera del total (“bomb out”). Para comparar entre categorías se usan los puntos.</p></div></li>
+            </ol>
+            <div class="grid-2 reveal" style="margin-top:22px">
+                <div>
+                    <div class="jueces" id="juecesDemo"><span class="luz"></span><span class="luz"></span><span class="luz"></span></div>
+                    <p class="jueces-leyenda" id="juecesDemoTxt">Prueba los jueces</p>
+                    <div class="jueces-botones">
+                        <button class="bx bx--ghost bx--sm" type="button" data-jueces="3-0">Válido 3-0</button>
+                        <button class="bx bx--ghost bx--sm" type="button" data-jueces="2-1">Válido 2-1</button>
+                        <button class="bx bx--ghost bx--sm" type="button" data-jueces="1-2">Nulo 1-2</button>
+                    </div>
+                </div>
+                <div class="ficha">
+                    <span class="ficha-num">Reglas de intentos</span>
+                    <h3>Lo que no puedes hacer</h3>
+                    <ul class="lista-check lista-x">
+                        <li>Bajar el peso del intento anterior (el peso solo sube).</li>
+                        <li>Subir menos de <strong>2,5 kg</strong> entre intentos (salvo intentos de récord, en múltiplos de 0,5 kg).</li>
+                        <li>Empezar antes del comando del juez central.</li>
+                        <li>Tardar más de 1 minuto en iniciar el intento con la barra cargada.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="movimientos" class="tema-tinta">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Los tres movimientos</p>
+            <h2 class="atr-h2">Técnica de competición, sin atajos</h2>
+            <p class="atr-sub reveal">Lo que exige el reglamento (basado en las reglas técnicas IPF), lo que te anula un
+                intento y las claves técnicas que de verdad mueven el total.</p>
+            <div class="pestanas reveal" role="tablist">
+                <button class="pestana" role="tab" aria-selected="true" aria-controls="mov-sentadilla">Sentadilla</button>
+                <button class="pestana" role="tab" aria-selected="false" aria-controls="mov-banca">Press de banca</button>
+                <button class="pestana" role="tab" aria-selected="false" aria-controls="mov-muerto">Peso muerto</button>
+            </div>
+
+            <div class="panel-pestana grid-3" id="mov-sentadilla" role="tabpanel">
+                <div class="ficha destacada"><span class="ficha-num">Comandos</span><h3>«Squat» y «Rack»</h3>
+                    <p>Sacas la barra, te colocas con rodillas bloqueadas y esperas quieto. El juez da <strong>«Squat»</strong>;
+                        bajas, subes hasta bloquear y esperas <strong>«Rack»</strong> para devolver la barra.</p>
+                    <p><strong>Profundidad:</strong> la parte superior de la pierna, a la altura de la articulación de la
+                        cadera, debe quedar por debajo de la parte superior de la rodilla.</p></div>
+                <div class="ficha"><span class="ficha-num">Nulo si…</span><h3>Causas típicas de luz roja</h3>
+                    <ul class="lista-check lista-x">
+                        <li>No alcanzas la profundidad.</li>
+                        <li>Rebotas dos veces o haces más de un intento de subir.</li>
+                        <li>Mueves los pies (paso adelante o atrás) durante el levantamiento.</li>
+                        <li>No bloqueas rodillas arriba o no esperas los comandos.</li>
+                        <li>Los codos o brazos tocan las piernas.</li>
+                    </ul></div>
+                <div class="ficha"><span class="ficha-num">Claves técnicas</span><h3>Lo que más suma</h3>
+                    <ul class="lista-check">
+                        <li><strong>Bracing:</strong> aire al abdomen y presión contra el cinturón antes de bajar.</li>
+                        <li><strong>Pies:</strong> a la anchura que te deje llegar a profundidad con la espalda neutra.</li>
+                        <li><strong>Rodillas</strong> en la línea de los pies, sin cerrarse al subir.</li>
+                        <li><strong>Barra alta o baja:</strong> la baja suele permitir más kilos; la alta, más cuádriceps.</li>
+                        <li>Graba tus series de lado: la profundidad engaña.</li>
+                    </ul></div>
+            </div>
+
+            <div class="panel-pestana grid-3" id="mov-banca" role="tabpanel" hidden>
+                <div class="ficha destacada"><span class="ficha-num">Comandos</span><h3>«Start», «Press» y «Rack»</h3>
+                    <p>Con los brazos estirados y la barra quieta, el juez da <strong>«Start»</strong>. Bajas y dejas la barra
+                        <strong>inmóvil en el pecho</strong> hasta el <strong>«Press»</strong>. Subes, bloqueas codos y esperas <strong>«Rack»</strong>.</p>
+                    <p><strong>Contacto:</strong> cabeza, hombros y glúteos en el banco; pies apoyados en el suelo. Agarre máximo:
+                        81 cm entre dedos índices.</p></div>
+                <div class="ficha"><span class="ficha-num">Nulo si…</span><h3>Causas típicas de luz roja</h3>
+                    <ul class="lista-check lista-x">
+                        <li>Levantas los glúteos del banco o despegas los pies.</li>
+                        <li>La barra rebota o se hunde en el pecho tras el «Press».</li>
+                        <li>La barra baja durante la subida (movimiento descendente).</li>
+                        <li>No bloqueas los codos al final.</li>
+                        <li>La barra toca los soportes durante el intento.</li>
+                    </ul></div>
+                <div class="ficha"><span class="ficha-num">Claves técnicas</span><h3>Lo que más suma</h3>
+                    <ul class="lista-check">
+                        <li><strong>Escápulas</strong> juntas y hacia abajo: base estable y hombros protegidos.</li>
+                        <li><strong>Arco</strong> natural de la espalda torácica, glúteos siempre en el banco.</li>
+                        <li><strong>Leg drive:</strong> empuja el suelo para transmitir tensión, sin levantar la cadera.</li>
+                        <li>Entrena <strong>siempre con pausa</strong> en las series pesadas: así compites.</li>
+                        <li>Codos a unos 45-70° del torso, antebrazos verticales.</li>
+                    </ul></div>
+            </div>
+
+            <div class="panel-pestana grid-3" id="mov-muerto" role="tabpanel" hidden>
+                <div class="ficha destacada"><span class="ficha-num">Comandos</span><h3>Sin comando al empezar, «Down» al final</h3>
+                    <p>Tiras cuando estés listo. Al terminar, con <strong>rodillas bloqueadas y hombros atrás</strong>, el juez da
+                        <strong>«Down»</strong> y bajas la barra acompañándola con las dos manos.</p>
+                    <p><strong>Estilos:</strong> convencional (pies juntos, manos fuera) y sumo (pies abiertos, manos dentro).
+                        Los dos son legales.</p></div>
+                <div class="ficha"><span class="ficha-num">Nulo si…</span><h3>Causas típicas de luz roja</h3>
+                    <ul class="lista-check lista-x">
+                        <li>La barra baja antes de llegar al bloqueo final.</li>
+                        <li>Apoyas la barra en los muslos para ayudarte a subir.</li>
+                        <li>No bloqueas rodillas o no terminas erguido.</li>
+                        <li>Sueltas la barra antes del «Down» o la dejas caer sin control.</li>
+                        <li>Das un paso durante el levantamiento.</li>
+                    </ul></div>
+                <div class="ficha"><span class="ficha-num">Claves técnicas</span><h3>Lo que más suma</h3>
+                    <ul class="lista-check">
+                        <li><strong>Barra pegada</strong> a las piernas todo el recorrido.</li>
+                        <li><strong>Quita la holgura</strong> («slack») de la barra antes de despegarla del suelo.</li>
+                        <li>Empuja el suelo con las piernas: no tires con la espalda redondeada.</li>
+                        <li>Agarre <strong>mixto o gancho</strong> para que el agarre no limite.</li>
+                        <li>Calcetines altos: en competición IPF son obligatorios en el peso muerto.</li>
+                    </ul></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="categorias">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Categorías</p>
+            <h2 class="atr-h2">Peso corporal y edad</h2>
+            <p class="atr-sub reveal">Categorías de peso de la IPF, las más usadas en federaciones afiliadas. El límite es
+                el peso máximo: “−83 kg” significa hasta 83,00 kg en el pesaje.</p>
+            <div class="grid-2 reveal">
+                <div class="tabla-wrap">
+                    <table class="tabla">
+                        <thead><tr><th>Hombres</th><th class="num">Hasta</th></tr></thead>
+                        <tbody>
+                            <tr><td>−53 kg <span class="marca">solo sub-júnior y júnior</span></td><td class="num">53,0 kg</td></tr>
+                            <tr><td>−59 kg</td><td class="num">59,0 kg</td></tr>
+                            <tr><td>−66 kg</td><td class="num">66,0 kg</td></tr>
+                            <tr><td>−74 kg</td><td class="num">74,0 kg</td></tr>
+                            <tr><td>−83 kg</td><td class="num">83,0 kg</td></tr>
+                            <tr><td>−93 kg</td><td class="num">93,0 kg</td></tr>
+                            <tr><td>−105 kg</td><td class="num">105,0 kg</td></tr>
+                            <tr><td>−120 kg</td><td class="num">120,0 kg</td></tr>
+                            <tr><td>+120 kg</td><td class="num">sin límite</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tabla-wrap">
+                    <table class="tabla">
+                        <thead><tr><th>Mujeres</th><th class="num">Hasta</th></tr></thead>
+                        <tbody>
+                            <tr><td>−43 kg <span class="marca">solo sub-júnior y júnior</span></td><td class="num">43,0 kg</td></tr>
+                            <tr><td>−47 kg</td><td class="num">47,0 kg</td></tr>
+                            <tr><td>−52 kg</td><td class="num">52,0 kg</td></tr>
+                            <tr><td>−57 kg</td><td class="num">57,0 kg</td></tr>
+                            <tr><td>−63 kg</td><td class="num">63,0 kg</td></tr>
+                            <tr><td>−69 kg</td><td class="num">69,0 kg</td></tr>
+                            <tr><td>−76 kg</td><td class="num">76,0 kg</td></tr>
+                            <tr><td>−84 kg</td><td class="num">84,0 kg</td></tr>
+                            <tr><td>+84 kg</td><td class="num">sin límite</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tabla-wrap reveal" style="margin-top:16px">
+                <table class="tabla">
+                    <thead><tr><th>Categoría de edad</th><th>Edad (según año de nacimiento)</th></tr></thead>
+                    <tbody>
+                        <tr><td>Sub-júnior</td><td>14 a 18 años</td></tr>
+                        <tr><td>Júnior</td><td>19 a 23 años</td></tr>
+                        <tr><td>Open (absoluta)</td><td>Desde 14 años, sin límite</td></tr>
+                        <tr><td>Máster 1 · 2 · 3 · 4</td><td>40-49 · 50-59 · 60-69 · 70 o más</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="aviso reveal"><p>Las categorías y normas se revisan cada cierto tiempo. Antes de competir, consulta
+                siempre el reglamento vigente de tu federación.</p></div>
+            <div class="grid-2 reveal" style="margin-top:6px">
+                <div class="ficha"><span class="ficha-num">Classic · Raw</span><h3>Sin equipo de soporte</h3>
+                    <p>Se permiten cinturón, rodilleras de neopreno (tipo manga), muñequeras y mono. Es la modalidad más
+                        popular y la mejor para empezar.</p></div>
+                <div class="ficha"><span class="ficha-num">Equipado</span><h3>Con trajes de soporte</h3>
+                    <p>Se añaden trajes de sentadilla y peso muerto, camisetas de banca y vendas de rodilla que almacenan
+                        energía. Se levanta más peso, pero es otra especialidad técnica.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="puntuacion" class="tema-papel2">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Herramienta · Puntos</p>
+            <h2 class="atr-h2">¿Cuántos puntos vale tu total?</h2>
+            <p class="atr-sub reveal">Para comparar a levantadores de distinto peso se usan fórmulas. La IPF usa los
+                <strong>puntos GL</strong> desde 2020; los <strong>DOTS</strong> son muy usados en otras federaciones y rankings.</p>
+            <div class="herramienta reveal">
+                <div>
+                    <h3>Tus datos</h3>
+                    <p class="h-desc">Peso corporal del pesaje y total (sentadilla + banca + muerto).</p>
+                    <div class="campos">
+                        <div class="campo ancho"><label id="lbl-ptsSexo">Sexo</label>
+                            <div class="segmentos" id="ptsSexo" role="group" aria-labelledby="lbl-ptsSexo"><button type="button" aria-pressed="true" data-v="h">Hombre</button><button type="button" aria-pressed="false" data-v="m">Mujer</button></div></div>
+                        <div class="campo ancho"><label id="lbl-ptsModo">Modalidad (para GL)</label>
+                            <div class="segmentos" id="ptsModo" role="group" aria-labelledby="lbl-ptsModo"><button type="button" aria-pressed="true" data-v="classic">Classic</button><button type="button" aria-pressed="false" data-v="equipado">Equipado</button></div></div>
+                        <div class="campo"><label for="ptsPeso">Peso corporal (kg)</label><input id="ptsPeso" type="number" inputmode="decimal" min="30" max="250" step="0.1" value="83"></div>
+                        <div class="campo"><label for="ptsTotal">Total (kg)</label><input id="ptsTotal" type="number" inputmode="decimal" min="0" max="1500" step="2.5" value="600"></div>
+                    </div>
+                </div>
+                <div class="h-salida">
+                    <span class="h-etiqueta">Puntos IPF GL</span>
+                    <div class="h-grande" id="ptsGL">—</div>
+                    <div class="h-filas">
+                        <div><span>Puntos DOTS</span><b id="ptsDots">—</b></div>
+                        <div><span>Total / peso corporal</span><b id="ptsRatio">—</b></div>
+                        <div><span>Referencia orientativa</span><b id="ptsNivel">—</b></div>
+                    </div>
+                    <p class="h-nota">Fórmulas oficiales publicadas (IPF GL 2020 y DOTS). La referencia es solo orientativa.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="intentos">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Herramienta · Intentos</p>
+            <h2 class="atr-h2">Elige tus intentos como un entrenador</h2>
+            <p class="atr-sub reveal">La regla de oro: el primer intento es un peso que harías en un mal día. El segundo
+                asegura un buen total. El tercero es para la marca.</p>
+            <div class="herramienta reveal">
+                <div>
+                    <h3>Tu máximo estimado para ese día</h3>
+                    <p class="h-desc">Usa lo que has hecho en el bloque de peaking, no tu mejor día de hace un año.</p>
+                    <div class="campos">
+                        <div class="campo"><label for="intS">Sentadilla (kg)</label><input id="intS" type="number" inputmode="decimal" step="2.5" value="180"></div>
+                        <div class="campo"><label for="intB">Press de banca (kg)</label><input id="intB" type="number" inputmode="decimal" step="2.5" value="120"></div>
+                        <div class="campo"><label for="intM">Peso muerto (kg)</label><input id="intM" type="number" inputmode="decimal" step="2.5" value="220"></div>
+                        <div class="campo"><label id="lbl-intEstr">Estrategia</label>
+                            <div class="segmentos" id="intEstr" role="group" aria-labelledby="lbl-intEstr"><button type="button" aria-pressed="false" data-v="0">Segura</button><button type="button" aria-pressed="true" data-v="1">Normal</button><button type="button" aria-pressed="false" data-v="2">A por todas</button></div></div>
+                    </div>
+                </div>
+                <div class="h-salida">
+                    <span class="h-etiqueta">Total previsto con los terceros</span>
+                    <div class="h-grande" id="intTotal">—</div>
+                    <div class="tabla-wrap" style="background:rgba(255,255,255,.4);border-color:rgba(13,13,12,.15)">
+                        <table class="tabla" style="min-width:0">
+                            <thead><tr><th></th><th class="num">1.º</th><th class="num">2.º</th><th class="num">3.º</th></tr></thead>
+                            <tbody id="intTabla"></tbody>
+                        </table>
+                    </div>
+                    <p class="h-nota">Redondeado a saltos de 2,5 kg. Ajusta el 2.º y el 3.º según cómo se mueva el anterior.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="rpe" class="tema-tinta">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Herramienta · RPE</p>
+            <h2 class="atr-h2">Entrena por esfuerzo percibido</h2>
+            <p class="atr-sub reveal"><strong>RPE</strong> es el esfuerzo percibido de 1 a 10: RPE 8 = te quedaban 2 repeticiones
+                en la recámara (RIR 2). Con una serie a RPE estimas tu máximo del día y calculas los pesos del resto.</p>
+            <div class="herramienta reveal">
+                <div>
+                    <h3>Tu serie de hoy</h3>
+                    <p class="h-desc">Ejemplo: 150 kg × 3 a RPE 8.</p>
+                    <div class="campos">
+                        <div class="campo"><label for="rpePeso">Peso (kg)</label><input id="rpePeso" type="number" inputmode="decimal" step="2.5" value="150"></div>
+                        <div class="campo"><label for="rpeReps">Repeticiones</label><select id="rpeReps"></select></div>
+                        <div class="campo ancho"><label for="rpeRpe">RPE</label><select id="rpeRpe"></select></div>
+                        <div class="campo"><label for="rpeReps2">Quiero hacer… reps</label><select id="rpeReps2"></select></div>
+                        <div class="campo"><label for="rpeRpe2">… a RPE</label><select id="rpeRpe2"></select></div>
+                    </div>
+                </div>
+                <div class="h-salida">
+                    <span class="h-etiqueta">Máximo estimado del día (e1RM)</span>
+                    <div class="h-grande" id="rpeE1">—</div>
+                    <div class="h-filas">
+                        <div><span id="rpeObjTxt">Peso para tu objetivo</span><b id="rpeObj">—</b></div>
+                        <div><span>Tu serie equivale al</span><b id="rpePct">—</b></div>
+                    </div>
+                    <p class="h-nota">Basado en la tabla RPE de uso habitual en powerlifting. Es una estimación: tu tabla real
+                        depende de tu experiencia y del ejercicio.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="programacion">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Programación</p>
+            <h2 class="atr-h2">Cómo se construye un total</h2>
+            <p class="atr-sub reveal">Cuatro principios y una estructura por bloques. Da igual el programa que sigas: si
+                respeta esto, funciona.</p>
+            <div class="grid-4 reveal">
+                <div class="ficha"><span class="ficha-num">01</span><h3>Especificidad</h3><p>Para ser fuerte en los tres movimientos hay que entrenarlos a menudo, con la técnica de competición.</p></div>
+                <div class="ficha"><span class="ficha-num">02</span><h3>Sobrecarga</h3><p>Más peso, más reps o más series con el tiempo. Sin progresión no hay adaptación.</p></div>
+                <div class="ficha"><span class="ficha-num">03</span><h3>Fatiga</h3><p>La fuerza se expresa cuando la fatiga baja. Por eso existen las descargas y el taper.</p></div>
+                <div class="ficha"><span class="ficha-num">04</span><h3>Individualización</h3><p>Tus puntos débiles, tu recuperación y tu vida deciden los ajustes, no el programa de moda.</p></div>
+            </div>
+
+            <h3 class="reveal" style="font-family:var(--f-display);font-size:clamp(22px,2.6vw,32px);letter-spacing:-.03em;margin:56px 0 18px">Un ciclo de 12-16 semanas</h3>
+            <div class="barras reveal" style="margin-bottom:22px">
+                <div><span>Acumulación</span><span class="pista"><i style="--w:92%"></i></span><b>65-80 %</b></div>
+                <div><span>Intensificación</span><span class="pista"><i style="--w:70%"></i></span><b>80-90 %</b></div>
+                <div><span>Peaking</span><span class="pista"><i style="--w:40%"></i></span><b>90-100 %</b></div>
+                <div><span>Taper</span><span class="pista"><i style="--w:18%"></i></span><b>volumen −40-60 %</b></div>
+            </div>
+            <div class="tabla-wrap reveal">
+                <table class="tabla">
+                    <thead><tr><th>Bloque</th><th>Duración</th><th>Qué se busca</th><th>Cómo se entrena</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Acumulación</strong></td><td>4-6 semanas</td><td>Músculo y capacidad de trabajo</td><td>Más series, 5-8 reps, RPE 6-8, variantes (pausas, tempo)</td></tr>
+                        <tr><td><strong>Intensificación</strong></td><td>3-5 semanas</td><td>Fuerza en rangos bajos</td><td>2-5 reps, RPE 7-9, menos volumen, movimientos de competición</td></tr>
+                        <tr><td><strong>Peaking</strong></td><td>2-3 semanas</td><td>Expresar la fuerza máxima</td><td>Singles pesados a RPE 8-9, practicar comandos y aperturas</td></tr>
+                        <tr><td><strong>Taper</strong></td><td>7-10 días</td><td>Llegar fresco</td><td>Volumen muy bajo, algo de intensidad, últimos días casi sin carga</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="reveal" style="font-family:var(--f-display);font-size:clamp(22px,2.6vw,32px);letter-spacing:-.03em;margin:56px 0 18px">Semana tipo (intermedio, 4 días)</h3>
+            <div class="grid-4 reveal">
+                <div class="ficha"><span class="ficha-num">Lunes</span><h3>Sentadilla + banca</h3><ul class="lista-check"><li>Sentadilla 1 × 3 RPE 8 + 3 × 4</li><li>Banca pausa 4 × 5 RPE 7</li><li>Remo 4 × 8-10</li></ul></div>
+                <div class="ficha"><span class="ficha-num">Martes</span><h3>Peso muerto</h3><ul class="lista-check"><li>Peso muerto 1 × 2 RPE 8 + 3 × 3</li><li>Banca estrecha 3 × 6</li><li>Dominadas 3 × 6-8</li></ul></div>
+                <div class="ficha"><span class="ficha-num">Jueves</span><h3>Banca + variante</h3><ul class="lista-check"><li>Banca 1 × 2 RPE 8 + 4 × 3</li><li>Sentadilla pausa 3 × 4</li><li>Accesorios de hombro</li></ul></div>
+                <div class="ficha"><span class="ficha-num">Sábado</span><h3>Volumen</h3><ul class="lista-check"><li>Sentadilla 4 × 6 RPE 7</li><li>Banca 5 × 5 RPE 7</li><li>Peso muerto rumano 3 × 8</li></ul></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="equipo" class="tema-tinta">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Equipamiento</p>
+            <h2 class="atr-h2">Lo que necesitas (y lo que no)</h2>
+            <p class="atr-sub reveal">En Classic, el material ayuda a levantar seguro y estable, pero no levanta por ti.
+                Si compites, comprueba que tu material está homologado por tu federación.</p>
+            <div class="grid-3 reveal">
+                <div class="ficha"><span class="ficha-num">Imprescindible</span><h3>Cinturón</h3><p>De cuero, 10 o 13 mm, con hebilla o palanca. Aumenta la presión abdominal en series pesadas de sentadilla y peso muerto.</p></div>
+                <div class="ficha"><span class="ficha-num">Muy útil</span><h3>Rodilleras de neopreno</h3><p>Tipo manga, hasta 7 mm. Dan calor y estabilidad. No son vendas: en Classic no se permiten vendas de rodilla.</p></div>
+                <div class="ficha"><span class="ficha-num">Muy útil</span><h3>Muñequeras</h3><p>Sujetan la muñeca en la banca y en la sentadilla con barra baja.</p></div>
+                <div class="ficha"><span class="ficha-num">Calzado</span><h3>Plano o con tacón</h3><p>Suela plana y fina para el peso muerto. Para la sentadilla, zapatilla de halterofilia (con tacón) o plana según tu anatomía.</p></div>
+                <div class="ficha"><span class="ficha-num">Competición</span><h3>Mono y calcetines altos</h3><p>El mono (singlet) es obligatorio, con camiseta debajo. Calcetines que cubran la espinilla en el peso muerto.</p></div>
+                <div class="ficha destacada"><span class="ficha-num">No lo necesitas</span><h3>Straps en competición</h3><p>Las correas de agarre no están permitidas al competir. Úsalas poco en el entreno para no depender de ellas.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="empezar">
+        <div class="atr-wrap col-texto">
+            <div>
+                <p class="atr-eyebrow reveal">Empezar a competir</p>
+                <h2 class="atr-h2">Tu primera competición</h2>
+                <p class="atr-sub">No hace falta ser muy fuerte para competir: hace falta ejecutar bien los movimientos y elegir los intentos con criterio. La primera competición es para aprender.</p>
+                <a class="btn-iron solid" href="index.html#conecta">Te preparo el ciclo</a>
+            </div>
+            <div>
+                <ol class="pasos reveal">
+                    <li><div><h4>Entrena como compites</h4><p>Pausa en todas tus series pesadas de banca, profundidad clara en sentadilla y bloqueo completo en el peso muerto.</p></div></li>
+                    <li><div><h4>Hazte con la licencia</h4><p>En España, la federación afiliada a la IPF es la AEP (Asociación Española de Powerlifting). También hay otras federaciones con reglas propias.</p></div></li>
+                    <li><div><h4>Elige una competición de nivel inicial</h4><p>Busca un campeonato autonómico o de promoción con 12-16 semanas de margen.</p></div></li>
+                    <li><div><h4>Planifica el ciclo</h4><p>Acumulación, intensificación, peaking y taper. Practica los comandos en los últimos bloques.</p></div></li>
+                    <li><div><h4>El día D</h4><p>Pesaje, alturas de rack, aperturas conservadoras y un plan de calentamiento escrito. Gana el que no falla.</p></div></li>
+                </ol>
+                <div class="ficha reveal" style="margin-top:16px">
+                    <span class="ficha-num">Checklist de la bolsa</span>
+                    <ul class="lista-check">
+                        <li>Licencia y DNI</li>
+                        <li>Mono, camiseta y calcetines altos</li>
+                        <li>Cinturón, rodilleras y muñequeras</li>
+                        <li>Zapatillas de sentadilla y de peso muerto</li>
+                        <li>Comida fácil de digerir, agua y algo de azúcar</li>
+                        <li>Tus intentos y tu calentamiento, por escrito</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq-pl" class="tema-papel2">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Preguntas frecuentes</p>
+            <h2 class="atr-h2">Dudas de powerlifting</h2>
+            <div class="detalles reveal">
+                <details><summary>¿El powerlifting es peligroso para la espalda?</summary><p>Con técnica correcta, cargas progresivas y descanso, el riesgo de lesión es similar o menor que en muchos deportes de equipo. Lo peligroso es subir peso sin dominar el movimiento o entrenar siempre al límite.</p></details>
+                <details><summary>¿Necesito ser muy fuerte para competir?</summary><p>No. Hay categorías de peso y edad, y las competiciones de promoción están pensadas para debutar. Compites contra tu mejor versión.</p></details>
+                <details><summary>¿Tengo que usar cinturón?</summary><p>No es obligatorio, pero en series muy pesadas ayuda a aumentar la presión abdominal. Aprende primero a respirar y hacer bracing sin él.</p></details>
+                <details><summary>¿Cuántos días a la semana debo entrenar?</summary><p>Con 3-4 días bien programados progresas de sobra. Más importante que los días es hacer cada movimiento varias veces por semana y dormir bien.</p></details>
+                <details><summary>¿Puedo hacer powerlifting y ganar músculo?</summary><p>Sí. Los bloques de acumulación, con más series y repeticiones, hacen crecer el músculo, y más músculo es más potencial de fuerza.</p></details>
+            </div>
+        </div>
+    </section>
+
+    <section class="tema-tinta" style="padding-top:0;padding-bottom:0">
+        <div class="atr-wrap"><a class="siguiente" href="boxeo.html"><span><small>Siguiente disciplina</small><strong>Boxeo</strong></span><i>→</i></a></div>
+    </section>
+    </main>
+
+    <footer class="atr-footer">
+        <div class="atr-wrap">
+            <div class="foot-top">
+                <div class="foot-brand">
+                    <a class="navbar-brand" href="index.html"><svg class="marca-ico" width="28" height="28" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M248,122H238V88a14,14,0,0,0-14-14H206V64a14,14,0,0,0-14-14H168a14,14,0,0,0-14,14v58H102V64A14,14,0,0,0,88,50H64A14,14,0,0,0,50,64V74H32A14,14,0,0,0,18,88v34H8a6,6,0,0,0,0,12H18v34a14,14,0,0,0,14,14H50v10a14,14,0,0,0,14,14H88a14,14,0,0,0,14-14V134h52v58a14,14,0,0,0,14,14h24a14,14,0,0,0,14-14V182h18a14,14,0,0,0,14-14V134h10a6,6,0,0,0,0-12ZM32,170a2,2,0,0,1-2-2V88a2,2,0,0,1,2-2H50v84Zm58,22a2,2,0,0,1-2,2H64a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2H88a2,2,0,0,1,2,2Zm104,0a2,2,0,0,1-2,2H168a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2h24a2,2,0,0,1,2,2Zm32-24a2,2,0,0,1-2,2H206V86h18a2,2,0,0,1,2,2Z"/></svg> ATR-GYM</a>
+                    <p>Entrenamiento de fuerza con método. Powerlifting, boxeo y culturismo explicados con rigor.</p>
+                </div>
+                <div class="foot-links foot-links-4">
+                    <div><h5>Disciplinas</h5><ul><li><a href="powerlifting.html">Powerlifting</a></li><li><a href="boxeo.html">Boxeo</a></li><li><a href="culturismo.html">Culturismo</a></li></ul></div>
+                    <div><h5>Entrena</h5><ul><li><a href="index.html#rutinas">Rutinas</a></li><li><a href="index.html#seccionTest">Test de nivel</a></li><li><a href="index.html#calculadoras">Calculadoras</a></li><li><a href="index.html#marcas">Marcas personales</a></li></ul></div>
+                    <div><h5>Aprende</h5><ul><li><a href="index.html#suplementos">Suplementos</a></li><li><a href="index.html#mitos">Mitos</a></li><li><a href="index.html#faq">Preguntas</a></li><li><a href="index.html#glosario">Abreviaturas</a></li></ul></div>
+                    <div><h5>Conecta</h5><ul><li><a href="index.html#tienda">Planes</a></li><li><a href="index.html#historia">Mi historia</a></li><li><a href="index.html#conecta">Contacto</a></li><li><a href="index.html#contacto">Contacto</a></li></ul></div>
+                </div>
+            </div>
+            <div class="canal-rapido" style="margin:30px 0 0;">
+                <a class="canal-chip wa" href="https://wa.me/34635816502" target="_blank" rel="noopener">635 81 65 02</a>
+                <a class="canal-chip ig" href="https://www.instagram.com/astro10__/" target="_blank" rel="noopener">@astro10__</a>
+                <a class="canal-chip mail" href="mailto:ivanib2007@icloud.com">ivanib2007@icloud.com</a>
+            </div>
+            <div class="foot-mega" aria-hidden="true"><span>A</span><span>T</span><span>R</span><span>—</span><span>G</span><span>Y</span><span>M</span></div>
+            <div class="foot-bottom">
+                <span>© <span id="anioActual">2026</span> Iván · ATR-GYM. Todos los derechos reservados.</span>
+                <span class="v">v6.0 · TERUEL</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="atr-base.js"></script>
+    <script>
+        // ============================================
+        // Powerlifting — jueces, puntos GL/DOTS, intentos y RPE
+        // ============================================
+        (function () {
+            'use strict';
+            const $ = id => document.getElementById(id);
+            const num = ATR.num, kg = ATR.kg;
+
+            // ---- Luces de los jueces
+            function encender(caja, txt, patron, texto) {
+                const luces = caja.querySelectorAll('.luz');
+                luces.forEach(l => l.className = 'luz');
+                patron.forEach((p, i) => setTimeout(() => {
+                    luces[i].className = 'luz ' + (p ? 'blanca' : 'roja');
+                    if (i === patron.length - 1) { txt.textContent = texto; ATR.pitido(p ? 880 : 220, .12); }
+                }, 350 + i * 260));
+            }
+            const hero = $('juecesHero');
+            if (hero) addEventListener('atr:listo', () => setTimeout(() => encender(hero, $('juecesHeroTxt'), [1, 1, 1], 'Good lift · 3 luces blancas'), 900), { once: true });
+            if (hero && document.body.classList.contains('listo')) setTimeout(() => encender(hero, $('juecesHeroTxt'), [1, 1, 1], 'Good lift · 3 luces blancas'), 900);
+            document.querySelectorAll('[data-jueces]').forEach(b => b.addEventListener('click', () => {
+                const t = b.dataset.jueces;
+                const pat = t === '3-0' ? [1, 1, 1] : t === '2-1' ? [1, 0, 1] : [0, 1, 0];
+                encender($('juecesDemo'), $('juecesDemoTxt'), pat, t === '1-2' ? 'Nulo · dos luces rojas' : 'Válido · ' + (t === '3-0' ? 'tres' : 'dos') + ' luces blancas');
+            }));
+
+            // ---- Botones segmentados (sexo, modalidad, estrategia)
+            function segmento(id, alCambiar) {
+                const g = $(id); if (!g) return () => null;
+                g.addEventListener('click', e => {
+                    const b = e.target.closest('button'); if (!b) return;
+                    g.querySelectorAll('button').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+                    alCambiar();
+                });
+                return () => g.querySelector('[aria-pressed="true"]').dataset.v;
+            }
+
+            // ---- Puntos: IPF GL (2020) y DOTS
+            const GL = {
+                classic: { h: [1199.72839, 1025.18162, 0.00921], m: [610.32796, 1045.59282, 0.03048] },
+                equipado: { h: [1236.25115, 1449.21864, 0.01644], m: [758.63878, 949.31382, 0.02435] }
+            };
+            const DOTS = {
+                h: [-307.75076, 24.0900756, -0.1918759221, 0.0007391293, -0.000001093],
+                m: [-57.96288, 13.6175032, -0.1126655495, 0.0005158568, -0.0000010706]
+            };
+            const sexo = segmento('ptsSexo', puntos), modo = segmento('ptsModo', puntos);
+            function puntos() {
+                const bw = num($('ptsPeso').value), total = num($('ptsTotal').value), s = sexo(), m = modo();
+                if (!(bw > 30) || !(total > 0)) { ['ptsGL', 'ptsDots', 'ptsRatio', 'ptsNivel'].forEach(i => $(i).textContent = '—'); return; }
+                const [A, B, C] = GL[m][s];
+                const gl = total * 100 / (A - B * Math.exp(-C * bw));
+                const x = Math.min(Math.max(bw, 40), s === 'h' ? 210 : 150), d = DOTS[s];
+                const dots = total * 500 / (d[0] + d[1] * x + d[2] * x * x + d[3] * x ** 3 + d[4] * x ** 4);
+                $('ptsGL').textContent = gl.toFixed(1);
+                $('ptsDots').textContent = dots.toFixed(1);
+                $('ptsRatio').textContent = (total / bw).toFixed(2) + ' × PC';
+                $('ptsNivel').textContent = dots >= 500 ? 'Élite nacional/internacional' : dots >= 400 ? 'Muy competitivo' : dots >= 300 ? 'Competidor sólido' : dots >= 200 ? 'Intermedio' : 'Empezando';
+            }
+            ['ptsPeso', 'ptsTotal'].forEach(i => $(i).addEventListener('input', puntos));
+            puntos();
+
+            // ---- Selección de intentos
+            const ESTR = [[.88, .94, .99], [.91, .96, 1.0], [.92, .97, 1.025]];
+            const estr = segmento('intEstr', intentos);
+            function intentos() {
+                const pct = ESTR[+estr()];
+                const filas = [['Sentadilla', 'intS'], ['Banca', 'intB'], ['Peso muerto', 'intM']];
+                let total = 0;
+                $('intTabla').innerHTML = filas.map(([nombre, id]) => {
+                    const max = num($(id).value);
+                    if (!(max > 0)) return `<tr><td>${nombre}</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>`;
+                    const i = pct.map(p => ATR.disco(max * p));
+                    for (let k = 1; k < 3; k++) if (i[k] < i[k - 1] + 2.5) i[k] = i[k - 1] + 2.5;
+                    total += i[2];
+                    return `<tr><td>${nombre}</td>${i.map(v => `<td class="num">${kg(v)}</td>`).join('')}</tr>`;
+                }).join('');
+                $('intTotal').innerHTML = total ? kg(total) + '<small>kg</small>' : '—';
+            }
+            ['intS', 'intB', 'intM'].forEach(i => $(i).addEventListener('input', intentos));
+            intentos();
+
+            // ---- Tabla RPE (porcentaje del 1RM según reps y RPE)
+            const SERIE = [100, 97.8, 95.5, 93.9, 92.2, 90.7, 89.2, 87.8, 86.3, 85.0, 83.7, 82.4, 81.1, 79.9, 78.6, 77.4, 76.2, 75.1, 73.9, 72.3, 70.7, 69.4, 68.0, 66.7, 65.3, 64.0, 62.6, 61.3, 59.9, 58.6, 57.4];
+            const pctRPE = (reps, rpe) => SERIE[(reps - 1) * 2 + (10 - rpe) * 2];
+            const opt = (sel, vals, def) => { sel.innerHTML = vals.map(v => `<option value="${v}"${v === def ? ' selected' : ''}>${String(v).replace('.', ',')}</option>`).join(''); };
+            const REPS = Array.from({ length: 12 }, (_, i) => i + 1), RPES = [10, 9.5, 9, 8.5, 8, 7.5, 7, 6.5, 6];
+            opt($('rpeReps'), REPS, 3); opt($('rpeRpe'), RPES, 8); opt($('rpeReps2'), REPS, 5); opt($('rpeRpe2'), RPES, 7);
+            function rpe() {
+                const peso = num($('rpePeso').value);
+                const p1 = pctRPE(+$('rpeReps').value, +$('rpeRpe').value), p2 = pctRPE(+$('rpeReps2').value, +$('rpeRpe2').value);
+                if (!(peso > 0)) { $('rpeE1').textContent = '—'; $('rpeObj').textContent = '—'; $('rpePct').textContent = '—'; return; }
+                const e1 = peso / (p1 / 100);
+                $('rpeE1').innerHTML = kg(Math.round(e1 * 2) / 2) + '<small>kg</small>';
+                $('rpeObjTxt').textContent = `${$('rpeReps2').value} reps a RPE ${$('rpeRpe2').value.replace('.', ',')}`;
+                $('rpeObj').textContent = kg(ATR.disco(e1 * p2 / 100)) + ' kg';
+                $('rpePct').textContent = p1.toFixed(1).replace('.', ',') + ' % del e1RM';
+            }
+            ['rpePeso', 'rpeReps', 'rpeRpe', 'rpeReps2', 'rpeRpe2'].forEach(i => $(i).addEventListener('input', rpe));
+            rpe();
+        })();
+    </script>
+    <script src="atr-barra.js"></script>
+    <script src="atr-anim.js"></script>
+    <script src="atr-vidrio.js"></script>
+    <script defer src="atr-3d-motor.js"></script>
+    <script defer src="atr-3d-powerlifting.js"></script>
+</body>
+
+</html>

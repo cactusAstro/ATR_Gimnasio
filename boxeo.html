@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boxeo — ATR-GYM</title>
+    <meta name="description" content="Boxeo: guardia, los seis golpes, defensa, juego de pies, generador de combinaciones, temporizador de rounds, preparación física, material, categorías y seguridad.">
+    <meta property="og:title" content="Boxeo — ATR-GYM">
+    <meta property="og:description" content="Boxeo: guardia, los seis golpes, defensa, juego de pies, generador de combinaciones, temporizador de rounds, preparación física, material, categorías y seguridad.">
+    <meta property="og:type" content="article">
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <link rel="canonical" href="https://cactusastro.github.io/ATR_GYM/boxeo.html">
+    <meta property="og:url" content="https://cactusastro.github.io/ATR_GYM/boxeo.html">
+    <meta property="og:site_name" content="ATR-GYM">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:image" content="https://cactusastro.github.io/ATR_GYM/img/compartir.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ATR-GYM · Entrena con método">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000000'/%3E%3Crect x='6' y='29' width='52' height='6' rx='3' fill='%23C7C7CC'/%3E%3Crect x='17' y='15' width='9' height='34' rx='2.5' fill='%23F5F5F7'/%3E%3Crect x='38' y='15' width='9' height='34' rx='2.5' fill='%23F5F5F7'/%3E%3Crect x='12' y='20' width='5' height='24' rx='2' fill='%238E8E93'/%3E%3Crect x='47' y='20' width='5' height='24' rx='2' fill='%238E8E93'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- la web usa la fuente del sistema (SF Pro en Apple); Inter Tight es su relevo en Android y Windows
+         y se carga sin bloquear el primer pintado. Las fuentes de los rótulos 3D las pide cada escena. -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="atr.css">
+    <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head>
+
+<body class="pagina-disciplina">
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <header class="atr-nav" id="atrNav">
+        <div class="atr-wrap">
+            <a class="navbar-brand" href="index.html" aria-label="ATR-GYM, ir al inicio">
+                <svg class="marca-ico" width="28" height="28" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M248,122H238V88a14,14,0,0,0-14-14H206V64a14,14,0,0,0-14-14H168a14,14,0,0,0-14,14v58H102V64A14,14,0,0,0,88,50H64A14,14,0,0,0,50,64V74H32A14,14,0,0,0,18,88v34H8a6,6,0,0,0,0,12H18v34a14,14,0,0,0,14,14H50v10a14,14,0,0,0,14,14H88a14,14,0,0,0,14-14V134h52v58a14,14,0,0,0,14,14h24a14,14,0,0,0,14-14V182h18a14,14,0,0,0,14-14V134h10a6,6,0,0,0,0-12ZM32,170a2,2,0,0,1-2-2V88a2,2,0,0,1,2-2H50v84Zm58,22a2,2,0,0,1-2,2H64a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2H88a2,2,0,0,1,2,2Zm104,0a2,2,0,0,1-2,2H168a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2h24a2,2,0,0,1,2,2Zm32-24a2,2,0,0,1-2,2H206V86h18a2,2,0,0,1,2,2Z"/></svg>
+                ATR-GYM
+            </a>
+            <span class="nav-here" id="navHere" aria-hidden="true">Boxeo</span>
+            <button class="atr-burger" id="atrBurger" aria-label="Abrir menú" aria-expanded="false" aria-controls="atrMenu">
+                <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M1 1h18M1 7h18M1 13h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+            </button>
+            <ul class="atr-links" id="atrMenu">
+                <li class="dd">
+                    <button class="dd-btn is-here" type="button" aria-expanded="false">Disciplinas <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <div class="dd-panel">
+                        <a href="powerlifting.html"><b>Powerlifting</b><span>Sentadilla, banca y peso muerto</span></a>
+                        <a href="boxeo.html"><b>Boxeo</b><span>Técnica, rounds y preparación</span></a>
+                        <a href="culturismo.html"><b>Culturismo</b><span>Hipertrofia, poses y nutrición</span></a>
+                    </div>
+                </li>
+                <li class="dd">
+                    <button class="dd-btn" type="button" aria-expanded="false">Empieza <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <div class="dd-panel">
+                        <a href="index.html#empieza"><b>Guía rápida</b><span>Itinerario de tres pasos</span></a>
+                        <a href="index.html#seccionTest"><b>Test de nivel</b><span>Seis preguntas para valorar tu nivel</span></a>
+                        <a href="index.html#faq"><b>Preguntas frecuentes</b><span>Dudas habituales al empezar</span></a>
+                    </div>
+                </li>
+                <li class="dd">
+                    <button class="dd-btn" type="button" aria-expanded="false">Entrena <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <div class="dd-panel">
+                        <a href="index.html#rutinas"><b>Rutinas</b><span>Mis sesiones semanales</span></a>
+                        <a href="index.html#calculadoras"><b>Calculadoras</b><span>1RM, macros y discos</span></a>
+                        <a href="index.html#marcas"><b>Marcas personales</b><span>Sentadilla, banca y peso muerto</span></a>
+                    </div>
+                </li>
+                <li class="dd">
+                    <button class="dd-btn" type="button" aria-expanded="false">Aprende <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <div class="dd-panel">
+                        <a href="index.html#suplementos"><b>Suplementos</b><span>Guías con evidencia científica</span></a>
+                        <a href="index.html#mitos"><b>Mitos</b><span>Ocho creencias revisadas con datos</span></a>
+                        <a href="index.html#ia"><b>Asistentes de IA</b><span>Instrucciones listas para usar</span></a>
+                    </div>
+                </li>
+                <li><a href="index.html#tienda">Planes</a></li>
+                <li><a class="cta" href="index.html#contacto">Contacto</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main>
+    <section class="pg-hero tema-tinta" id="top">
+        <div class="atr-wrap">
+            <p class="pg-migas"><a href="index.html">ATR-GYM</a> / Disciplinas / Boxeo</p>
+            <h1 class="pg-titulo" style="font-size: clamp(64px, 17vw, 260px)">Box<em>eo</em></h1>
+            <div class="pg-hero-grid">
+                <div>
+                    <p class="pg-lead">La ciencia de <strong>golpear sin ser golpeado</strong>. Guardia, golpes, defensa, juego de
+                        pies, acondicionamiento y seguridad, con temporizador de rounds y generador de combinaciones.</p>
+                    <div class="hero-ctas">
+                        <a class="btn-iron solid" href="#reloj">Abrir el temporizador</a>
+                        <a class="btn-iron ghost" href="#golpes">Los seis golpes</a>
+                    </div>
+                </div>
+                <div class="combo-caja" aria-hidden="true">
+                    <div>
+                        <p class="reloj-fase" style="margin:0 0 6px">Combinación</p>
+                        <div class="combo-nums" id="heroCombo"><span>1</span>-<span>2</span></div>
+                        <p class="combo-nombres" id="heroComboTxt">Jab · Directo</p>
+                    </div>
+                </div>
+            </div>
+            <div class="pg-datos">
+                <div><b>6</b><span>golpes básicos</span></div>
+                <div><b>3:00</b><span>minutos por round</span></div>
+                <div><b>1:00</b><span>de descanso</span></div>
+            </div>
+        </div>
+    </section>
+
+    <nav class="pg-indice" aria-label="En esta página">
+        <ol>
+            <li><a href="#gimnasio"><span>3D</span>Tu zona</a></li>
+            <li><a href="#guardia"><span>01</span>Guardia</a></li>
+            <li><a href="#golpes"><span>02</span>Golpes</a></li>
+            <li><a href="#defensa"><span>03</span>Defensa</a></li>
+            <li><a href="#pies"><span>04</span>Juego de pies</a></li>
+            <li><a href="#combos"><span>05</span>Combinaciones</a></li>
+            <li><a href="#reloj"><span>06</span>Temporizador</a></li>
+            <li><a href="#entreno"><span>07</span>Entrenamiento</a></li>
+            <li><a href="#fisico"><span>08</span>Preparación física</a></li>
+            <li><a href="#material"><span>09</span>Material</a></li>
+            <li><a href="#pesos"><span>10</span>Categorías</a></li>
+            <li><a href="#seguridad"><span>11</span>Seguridad</a></li>
+            <li><a href="#faq-bx"><span>12</span>Preguntas</a></li>
+        </ol>
+    </nav>
+
+    <section class="gym3d-seccion tema-tinta" id="gimnasio" aria-label="El club de boxeo en 3D">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Instalaciones en 3D</p>
+            <h2 class="atr-h2">El club de boxeo</h2>
+            <p class="atr-sub reveal">Ring reglamentario, sacos colgados de cadenas, pera y un reloj de asaltos que cuenta de verdad, con el sol de la tarde entrando por el ventanal. Arrastra para mirar alrededor y cambia de plano abajo. El gimnasio entero lo tienes en la <a href="index.html#gimnasio">portada</a>.</p>
+        </div>
+        <div class="gym3d-marco">
+            <div class="escena3d" data-escena="boxeo"></div>
+        </div>
+    </section>
+
+    <section id="guardia">
+        <div class="atr-wrap col-texto">
+            <div>
+                <p class="atr-eyebrow reveal">Guardia y postura</p>
+                <h2 class="atr-h2">Todo empieza en los pies</h2>
+                <p class="atr-sub">Una buena guardia te deja atacar y defender sin cambiar de posición. Si la guardia
+                    falla, todo lo demás falla.</p>
+            </div>
+            <div class="reveal">
+                <div class="grid-2" style="margin-bottom:16px">
+                    <div class="ficha destacada"><span class="ficha-num">Ortodoxa</span><h3>Pie izquierdo delante</h3><p>Para diestros: la mano izquierda (adelantada) mide y molesta; la derecha (trasera) es la potente.</p></div>
+                    <div class="ficha"><span class="ficha-num">Zurda · southpaw</span><h3>Pie derecho delante</h3><p>El espejo de la ortodoxa. Incómoda para el rival porque la mayoría entrena contra diestros.</p></div>
+                </div>
+                <ul class="lista-check">
+                    <li><strong>Pies</strong> a la anchura de los hombros, el de atrás en diagonal y sobre la punta.</li>
+                    <li><strong>Rodillas</strong> ligeramente flexionadas: listo para moverte en cualquier dirección.</li>
+                    <li><strong>Mentón</strong> abajo, protegido detrás del hombro adelantado.</li>
+                    <li><strong>Manos</strong> a la altura de las mejillas; la trasera pegada a la mandíbula.</li>
+                    <li><strong>Codos</strong> cerrados, protegiendo costillas e hígado.</li>
+                    <li><strong>Peso</strong> repartido 50/50 o ligeramente hacia la pierna trasera.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="golpes" class="tema-tinta">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Los seis golpes</p>
+            <h2 class="atr-h2">El abecedario del boxeo</h2>
+            <p class="atr-sub reveal">Los golpes se numeran para poder dictar combinaciones rápido. Esta es la numeración
+                más extendida (para guardia ortodoxa; algunos gimnasios cambian el 5 y el 6).</p>
+            <div class="golpes reveal">
+                <div class="golpe"><b>1</b><h4>Jab</h4><p>Directo de la mano adelantada. Mide la distancia, abre la guardia rival y prepara todo lo demás. El golpe más importante.</p></div>
+                <div class="golpe"><b>2</b><h4>Directo · cross</h4><p>Recto de la mano trasera. Gira la cadera y el pie de atrás: la fuerza viene del suelo.</p></div>
+                <div class="golpe"><b>3</b><h4>Gancho adelantado</h4><p>Golpe circular de la mano delantera, codo a la altura del puño. Letal a corta distancia, a la cara o al hígado.</p></div>
+                <div class="golpe"><b>4</b><h4>Gancho trasero</h4><p>Gancho de la mano trasera. Más potente y más lento: úsalo cuando el rival ya esté comprometido.</p></div>
+                <div class="golpe"><b>5</b><h4>Uppercut adelantado</h4><p>Golpe ascendente de la mano delantera. Pasa por dentro de la guardia cuando el rival se cierra.</p></div>
+                <div class="golpe"><b>6</b><h4>Uppercut trasero</h4><p>Ascendente de la mano trasera. Muy potente a corta distancia, peligroso si lo tiras desde lejos.</p></div>
+            </div>
+            <div class="aviso reveal" style="--fg:#F2F0E9;--bg:var(--tinta)"><p>Regla de oro: <strong>la mano que no golpea vuelve a proteger la cara</strong>. Y cada golpe regresa por el mismo camino por el que salió.</p></div>
+        </div>
+    </section>
+
+    <section id="defensa">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Defensa</p>
+            <h2 class="atr-h2">No te pueden ganar si no te tocan</h2>
+            <p class="atr-sub reveal">Cada defensa tiene su golpe de respuesta. Defender sin contraatacar es solo aguantar.</p>
+            <div class="grid-3 reveal">
+                <div class="ficha"><span class="ficha-num">Bloqueo</span><h3>Cubrirse</h3><p>Absorbes el golpe con guantes, antebrazos o codos. Sencillo y fiable, pero te deja quieto y cansa los brazos.</p></div>
+                <div class="ficha"><span class="ficha-num">Parada · parry</span><h3>Desviar</h3><p>Un toque seco de la mano trasera desvía el jab. Abre un hueco inmediato para tu directo.</p></div>
+                <div class="ficha"><span class="ficha-num">Esquiva · slip</span><h3>Mover la cabeza</h3><p>Giro corto de hombros y cadera para que el recto pase junto a la cabeza. Respuesta natural: gancho o directo.</p></div>
+                <div class="ficha"><span class="ficha-num">Rodar · bob and weave</span><h3>Pasar por debajo</h3><p>Flexión de piernas en forma de U por debajo del gancho. Sales en ángulo y con las manos cargadas.</p></div>
+                <div class="ficha"><span class="ficha-num">Paso atrás · pull</span><h3>Salir de la distancia</h3><p>Echas el peso atrás lo justo para que el golpe no llegue y contragolpeas cuando el rival se queda estirado.</p></div>
+                <div class="ficha destacada"><span class="ficha-num">Amarre · clinch</span><h3>Neutralizar</h3><p>Atas los brazos del rival para cortar su ritmo o recuperar aire. El árbitro separa: úsalo con inteligencia.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pies" class="tema-papel2">
+        <div class="atr-wrap col-texto">
+            <div>
+                <p class="atr-eyebrow reveal">Juego de pies</p>
+                <h2 class="atr-h2">Los pies ganan los combates</h2>
+                <p class="atr-sub">Las piernas te ponen a distancia de golpear, te sacan de la de recibir y crean los ángulos.</p>
+            </div>
+            <ol class="pasos reveal">
+                <li><div><h4>Paso y arrastre</h4><p>Se mueve primero el pie más cercano a la dirección a la que vas y el otro lo sigue. Nunca cruces los pies.</p></div></li>
+                <li><div><h4>Pivote</h4><p>Giras sobre la punta del pie adelantado para cambiar el ángulo y salir de la línea de ataque del rival.</p></div></li>
+                <li><div><h4>Distancia</h4><p>Aprende tu medida: la distancia del jab. Fuera de ella no te alcanzan; dentro, tienes que estar golpeando o defendiendo.</p></div></li>
+                <li><div><h4>Cortar el ring</h4><p>Si el rival se escapa, no le persigas: pasos laterales para cerrarle el camino hacia las cuerdas.</p></div></li>
+                <li><div><h4>Salir en ángulo</h4><p>Después de cada combinación, sal hacia un lado. Quedarte delante es regalar el contraataque.</p></div></li>
+            </ol>
+        </div>
+    </section>
+
+    <section id="combos">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Herramienta · Combinaciones</p>
+            <h2 class="atr-h2">Generador de combinaciones</h2>
+            <p class="atr-sub reveal">Para sombra o saco: pulsa y lanza la combinación. Actívalo en automático y trabaja por
+                rounds sin pensar qué toca.</p>
+            <div class="herramienta reveal">
+                <div>
+                    <h3>Configura</h3>
+                    <p class="h-desc">«Esq» = esquiva, «Rod» = rodar por debajo, «Atrás» = paso atrás.</p>
+                    <div class="campos">
+                        <div class="campo ancho"><label id="lbl-comboNivel">Nivel</label>
+                            <div class="segmentos" id="comboNivel" role="group" aria-labelledby="lbl-comboNivel"><button type="button" aria-pressed="true" data-v="0">Básico</button><button type="button" aria-pressed="false" data-v="1">Intermedio</button><button type="button" aria-pressed="false" data-v="2">Avanzado</button></div></div>
+                        <div class="campo"><label for="comboCada">Automático cada</label>
+                            <select id="comboCada"><option value="3">3 s</option><option value="4" selected>4 s</option><option value="6">6 s</option><option value="8">8 s</option></select></div>
+                        <div class="campo"><label>&nbsp;</label><button type="button" class="bx bx--ghost" id="comboAuto" style="width:100%">Automático</button></div>
+                        <div class="campo ancho"><button type="button" class="bx" id="comboNuevo" style="width:100%">Nueva combinación</button></div>
+                    </div>
+                </div>
+                <div class="h-salida" style="background:var(--tinta);color:#F2F0E9;justify-content:center;text-align:center">
+                    <span class="h-etiqueta" style="color:var(--voltio);opacity:1">Lanza</span>
+                    <div class="combo-nums" id="combo" style="margin:14px 0">1-2</div>
+                    <p class="combo-nombres" id="comboTxt">Jab · Directo</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="reloj" class="tema-tinta">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Herramienta · Temporizador</p>
+            <h2 class="atr-h2">Temporizador de rounds</h2>
+            <p class="atr-sub reveal">Campana al empezar y al acabar, aviso a los 10 segundos y descanso entre rounds.
+                Deja el móvil apoyado y entrena.</p>
+            <div class="reloj reveal">
+                <div class="reloj-pantalla" id="relojPantalla">
+                    <span class="reloj-anillo" id="relojAnillo"></span>
+                    <div>
+                        <div class="reloj-fase" id="relojFase">Listo</div>
+                        <div class="reloj-tiempo" id="relojTiempo">3:00</div>
+                        <div class="reloj-round" id="relojRound">Round 1 de 6</div>
+                    </div>
+                </div>
+                <div class="reloj-control">
+                    <div class="campos">
+                        <div class="campo"><label for="rjRounds">Rounds</label><select id="rjRounds"></select></div>
+                        <div class="campo"><label for="rjDur">Duración</label><select id="rjDur"><option value="60">1:00</option><option value="120">2:00</option><option value="180" selected>3:00</option><option value="240">4:00</option><option value="300">5:00</option></select></div>
+                        <div class="campo"><label for="rjDesc">Descanso</label><select id="rjDesc"><option value="30">0:30</option><option value="45">0:45</option><option value="60" selected>1:00</option><option value="90">1:30</option><option value="120">2:00</option></select></div>
+                        <div class="campo"><label for="rjPrep">Preparación</label><select id="rjPrep"><option value="5">5 s</option><option value="10" selected>10 s</option><option value="20">20 s</option></select></div>
+                    </div>
+                    <div class="reloj-botones">
+                        <button type="button" class="bx" id="rjStart">Empezar</button>
+                        <button type="button" class="bx bx--ghost" id="rjReset">Reiniciar</button>
+                    </div>
+                    <p class="hint">Consejo: en sombra y saco, 3 minutos con 1 de descanso. Para empezar, 2 minutos y 1 de descanso.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="entreno">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Entrenamiento</p>
+            <h2 class="atr-h2">Cómo es una sesión de boxeo</h2>
+            <p class="atr-sub reveal">Estructura de una sesión de 60-75 minutos y una semana tipo para quien empieza.</p>
+            <ol class="pasos reveal" style="margin-bottom:40px">
+                <li><div><h4>Calentamiento · 10-12 min</h4><p>Comba 3 rounds, movilidad de hombros, cadera y tobillos. La comba entrena ritmo y pies a la vez.</p></div></li>
+                <li><div><h4>Sombra · 3 rounds</h4><p>Técnica sin rival: guardia, pies y combinaciones limpias. Aquí se corrigen los errores.</p></div></li>
+                <li><div><h4>Técnica con compañero o manoplas · 3-4 rounds</h4><p>Distancia real y reacción. Las manoplas con un entrenador son el mejor atajo para aprender.</p></div></li>
+                <li><div><h4>Saco · 4-6 rounds</h4><p>Potencia y volumen de golpes. Golpea con técnica, no empujes el saco.</p></div></li>
+                <li><div><h4>Acondicionamiento · 10-15 min</h4><p>Intervalos, core y cuello. Cerrar la sesión cansado sí, pero sin destrozar la técnica.</p></div></li>
+                <li><div><h4>Vuelta a la calma</h4><p>Estiramientos suaves y respiración. Hidrátate y apunta lo trabajado.</p></div></li>
+            </ol>
+            <div class="tabla-wrap reveal">
+                <table class="tabla">
+                    <thead><tr><th>Día</th><th>Sesión</th><th>Objetivo</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Lunes</strong></td><td>Boxeo técnico: sombra, manoplas, saco</td><td>Técnica y coordinación</td></tr>
+                        <tr><td><strong>Martes</strong></td><td>Fuerza (45 min) + carrera suave 20 min</td><td>Fuerza general y base aeróbica</td></tr>
+                        <tr><td><strong>Miércoles</strong></td><td>Boxeo: defensa y contraataque, saco por rounds</td><td>Defensa y ritmo</td></tr>
+                        <tr><td><strong>Jueves</strong></td><td>Descanso activo o movilidad</td><td>Recuperación</td></tr>
+                        <tr><td><strong>Viernes</strong></td><td>Boxeo: combinaciones, trabajo de pies, intervalos</td><td>Potencia y resistencia</td></tr>
+                        <tr><td><strong>Sábado</strong></td><td>Fuerza (45 min) o sparring técnico supervisado</td><td>Fuerza / aplicación</td></tr>
+                        <tr><td><strong>Domingo</strong></td><td>Descanso</td><td>—</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="fisico" class="tema-papel2">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Preparación física</p>
+            <h2 class="atr-h2">Pegar fuerte en el último round</h2>
+            <p class="atr-sub reveal">Un combate mezcla esfuerzos explosivos con una base aeróbica que te deja recuperar
+                entre golpes. Hay que entrenar las dos cosas.</p>
+            <div class="grid-2 reveal">
+                <div class="ficha">
+                    <span class="ficha-num">Qué energía usa un round</span>
+                    <h3>Mezcla aeróbica y anaeróbica</h3>
+                    <div class="barras" style="margin-top:18px">
+                        <div><span>Base aeróbica</span><span class="pista"><i style="--w:70%"></i></span><b>alta</b></div>
+                        <div><span>Explosividad</span><span class="pista"><i style="--w:55%"></i></span><b>media</b></div>
+                        <div><span>Fuerza máxima</span><span class="pista"><i style="--w:30%"></i></span><b>base</b></div>
+                    </div>
+                    <p style="margin-top:16px">Proporción orientativa: la base aeróbica es lo que te permite mantener el ritmo y recuperar en el minuto de descanso.</p>
+                </div>
+                <div class="ficha">
+                    <span class="ficha-num">Qué entrenar</span>
+                    <h3>Fuerza para boxeadores</h3>
+                    <ul class="lista-check">
+                        <li><strong>Base aeróbica:</strong> 2-3 sesiones de 30-45 min a ritmo cómodo.</li>
+                        <li><strong>Intervalos:</strong> 6-10 × 30 s fuerte / 30 s suave, o rounds de 3 min al 80 %.</li>
+                        <li><strong>Fuerza:</strong> 2 días, pocos ejercicios y lejos del fallo: sentadilla, peso muerto con barra hexagonal, dominadas, press.</li>
+                        <li><strong>Potencia:</strong> lanzamientos de balón medicinal rotacionales y saltos.</li>
+                        <li><strong>Core y cuello:</strong> antirrotación (press Pallof) y trabajo isométrico de cuello.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="aviso reveal"><p>Músculo sí, pero el que puedas mover. Ganar mucho peso te cambia de categoría y te
+                puede quitar velocidad. Coordina la fuerza con los días de boxeo: nunca pierna pesada el día antes del sparring.</p></div>
+        </div>
+    </section>
+
+    <section id="material">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Material</p>
+            <h2 class="atr-h2">Lo que necesitas para empezar</h2>
+            <div class="tabla-wrap reveal">
+                <table class="tabla">
+                    <thead><tr><th>Material</th><th>Recomendación</th><th>Por qué</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Vendas</strong></td><td>4-4,5 m, semielásticas</td><td>Sujetan muñeca y nudillos. Van siempre debajo del guante.</td></tr>
+                        <tr><td><strong>Guantes de saco</strong></td><td>10-12 oz</td><td>Para saco y manoplas.</td></tr>
+                        <tr><td><strong>Guantes de sparring</strong></td><td>14 oz (hasta ~70 kg) · 16 oz (más de ~70 kg)</td><td>Más acolchado para proteger al compañero.</td></tr>
+                        <tr><td><strong>Protector bucal</strong></td><td>Termoformable o a medida</td><td>Obligatorio en cualquier contacto. Protege dientes y mandíbula.</td></tr>
+                        <tr><td><strong>Casco</strong></td><td>Con protección de pómulos</td><td>Para sparring. Reduce cortes, no elimina el riesgo de conmoción.</td></tr>
+                        <tr><td><strong>Coquilla / protector</strong></td><td>Inguinal o pectoral</td><td>Obligatorio en competición según categoría.</td></tr>
+                        <tr><td><strong>Botas de boxeo</strong></td><td>Suela fina y agarre</td><td>Mejoran el pivote y protegen el tobillo.</td></tr>
+                        <tr><td><strong>Comba</strong></td><td>De velocidad</td><td>Ritmo, pies y cardio en poco espacio.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="pesos" class="tema-tinta">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Categorías</p>
+            <h2 class="atr-h2">Categorías de peso profesionales</h2>
+            <p class="atr-sub reveal">Las 17 divisiones del boxeo profesional masculino (límite máximo). El boxeo amateur
+                olímpico tiene menos categorías y su reparto cambia según la federación internacional.</p>
+            <div class="tabla-wrap reveal">
+                <table class="tabla">
+                    <thead><tr><th>División</th><th>Nombre en inglés</th><th class="num">Hasta (kg)</th><th class="num">Libras</th></tr></thead>
+                    <tbody>
+                        <tr><td>Paja</td><td>Minimumweight</td><td class="num">47,6</td><td class="num">105</td></tr>
+                        <tr><td>Minimosca</td><td>Light flyweight</td><td class="num">49,0</td><td class="num">108</td></tr>
+                        <tr><td>Mosca</td><td>Flyweight</td><td class="num">50,8</td><td class="num">112</td></tr>
+                        <tr><td>Supermosca</td><td>Super flyweight</td><td class="num">52,2</td><td class="num">115</td></tr>
+                        <tr><td>Gallo</td><td>Bantamweight</td><td class="num">53,5</td><td class="num">118</td></tr>
+                        <tr><td>Supergallo</td><td>Super bantamweight</td><td class="num">55,3</td><td class="num">122</td></tr>
+                        <tr><td>Pluma</td><td>Featherweight</td><td class="num">57,2</td><td class="num">126</td></tr>
+                        <tr><td>Superpluma</td><td>Super featherweight</td><td class="num">59,0</td><td class="num">130</td></tr>
+                        <tr><td>Ligero</td><td>Lightweight</td><td class="num">61,2</td><td class="num">135</td></tr>
+                        <tr><td>Superligero</td><td>Super lightweight</td><td class="num">63,5</td><td class="num">140</td></tr>
+                        <tr><td>Wélter</td><td>Welterweight</td><td class="num">66,7</td><td class="num">147</td></tr>
+                        <tr><td>Superwélter</td><td>Super welterweight</td><td class="num">69,9</td><td class="num">154</td></tr>
+                        <tr><td>Medio</td><td>Middleweight</td><td class="num">72,6</td><td class="num">160</td></tr>
+                        <tr><td>Supermedio</td><td>Super middleweight</td><td class="num">76,2</td><td class="num">168</td></tr>
+                        <tr><td>Semipesado</td><td>Light heavyweight</td><td class="num">79,4</td><td class="num">175</td></tr>
+                        <tr><td>Crucero</td><td>Cruiserweight</td><td class="num">90,7</td><td class="num">200</td></tr>
+                        <tr><td>Pesado</td><td>Heavyweight</td><td class="num">sin límite</td><td class="num">+200</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="grid-2 reveal" style="margin-top:16px">
+                <div class="ficha"><span class="ficha-num">Amateur (olímpico)</span><h3>Pocos asaltos, mucha intensidad</h3><p>Combates de 3 asaltos de 3 minutos. Se valora la calidad y cantidad de golpes limpios. Reconocimiento médico y licencia federativa obligatorios.</p></div>
+                <div class="ficha"><span class="ficha-num">Profesional</span><h3>De 4 a 12 asaltos</h3><p>Asaltos de 3 minutos (2 en boxeo femenino profesional). Tres jueces puntúan cada asalto con el sistema de 10 puntos: 10-9 al ganador del asalto.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="seguridad">
+        <div class="atr-wrap col-texto">
+            <div>
+                <p class="atr-eyebrow reveal">Seguridad</p>
+                <h2 class="atr-h2">El cerebro no se entrena</h2>
+                <p class="atr-sub">El boxeo es un deporte de contacto. Entrenar con criterio es lo que te permite seguir boxeando muchos años.</p>
+            </div>
+            <div class="reveal">
+                <div class="aviso serio"><p><strong>Si después de un golpe tienes dolor de cabeza, mareo, náuseas, visión borrosa o
+                    confusión, para y acude a un médico.</strong> No vuelvas al contacto hasta que un profesional te dé el alta.</p></div>
+                <ul class="lista-check">
+                    <li><strong>Sparring técnico</strong> (a baja intensidad) la mayoría de las veces; guerras, nunca en el entrenamiento.</li>
+                    <li><strong>Supervisión:</strong> no hagas sparring sin un entrenador delante ni con alguien mucho más pesado.</li>
+                    <li><strong>Revisión médica</strong> anual; es obligatoria para tener licencia federativa.</li>
+                    <li><strong>Vendas y bucal siempre</strong>, también en entrenamientos «suaves».</li>
+                    <li><strong>Nada de cortes de peso extremos:</strong> la deshidratación aumenta el riesgo de lesión cerebral.</li>
+                    <li><strong>Menores:</strong> siempre en club federado y con competición adaptada a su edad.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq-bx" class="tema-papel2">
+        <div class="atr-wrap">
+            <p class="atr-eyebrow reveal">Preguntas frecuentes</p>
+            <h2 class="atr-h2">Dudas de boxeo</h2>
+            <div class="detalles reveal">
+                <details><summary>¿Puedo aprender boxeo sin hacer sparring nunca?</summary><p>Sí. El boxeo de forma (sombra, saco, manoplas, comba) es un entrenamiento excelente y seguro. El sparring es para quien quiere competir o aplicar la técnica, y siempre con supervisión.</p></details>
+                <details><summary>¿Boxeo o pesas para ponerme en forma?</summary><p>Se complementan. El boxeo mejora la resistencia, la coordinación y quema muchas calorías; las pesas construyen músculo y fuerza. Lo ideal: 2-3 días de cada.</p></details>
+                <details><summary>¿Cuánto se tarda en poder hacer sparring?</summary><p>Normalmente, entre 3 y 6 meses de técnica constante: guardia estable, defensa básica y control de la distancia. Tu entrenador decide cuándo.</p></details>
+                <details><summary>¿Qué guantes compro primero?</summary><p>Unos de 14 oz si pesas menos de unos 70 kg o de 16 oz si pesas más: sirven para saco y para empezar con compañeros. Más adelante, unos de saco más ligeros.</p></details>
+                <details><summary>¿El boxeo sirve para defensa personal?</summary><p>Mejora mucho tus reflejos, tu distancia y tu confianza. Pero la mejor defensa personal sigue siendo evitar el conflicto.</p></details>
+            </div>
+        </div>
+    </section>
+
+    <section class="tema-tinta" style="padding-top:0;padding-bottom:0">
+        <div class="atr-wrap"><a class="siguiente" href="culturismo.html"><span><small>Siguiente disciplina</small><strong>Culturismo</strong></span><i>→</i></a></div>
+    </section>
+    </main>
+
+    <footer class="atr-footer">
+        <div class="atr-wrap">
+            <div class="foot-top">
+                <div class="foot-brand">
+                    <a class="navbar-brand" href="index.html"><svg class="marca-ico" width="28" height="28" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M248,122H238V88a14,14,0,0,0-14-14H206V64a14,14,0,0,0-14-14H168a14,14,0,0,0-14,14v58H102V64A14,14,0,0,0,88,50H64A14,14,0,0,0,50,64V74H32A14,14,0,0,0,18,88v34H8a6,6,0,0,0,0,12H18v34a14,14,0,0,0,14,14H50v10a14,14,0,0,0,14,14H88a14,14,0,0,0,14-14V134h52v58a14,14,0,0,0,14,14h24a14,14,0,0,0,14-14V182h18a14,14,0,0,0,14-14V134h10a6,6,0,0,0,0-12ZM32,170a2,2,0,0,1-2-2V88a2,2,0,0,1,2-2H50v84Zm58,22a2,2,0,0,1-2,2H64a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2H88a2,2,0,0,1,2,2Zm104,0a2,2,0,0,1-2,2H168a2,2,0,0,1-2-2V64a2,2,0,0,1,2-2h24a2,2,0,0,1,2,2Zm32-24a2,2,0,0,1-2,2H206V86h18a2,2,0,0,1,2,2Z"/></svg> ATR-GYM</a>
+                    <p>Entrenamiento de fuerza con método. Powerlifting, boxeo y culturismo explicados con rigor.</p>
+                </div>
+                <div class="foot-links foot-links-4">
+                    <div><h5>Disciplinas</h5><ul><li><a href="powerlifting.html">Powerlifting</a></li><li><a href="boxeo.html">Boxeo</a></li><li><a href="culturismo.html">Culturismo</a></li></ul></div>
+                    <div><h5>Entrena</h5><ul><li><a href="index.html#rutinas">Rutinas</a></li><li><a href="index.html#seccionTest">Test de nivel</a></li><li><a href="index.html#calculadoras">Calculadoras</a></li><li><a href="index.html#marcas">Marcas personales</a></li></ul></div>
+                    <div><h5>Aprende</h5><ul><li><a href="index.html#suplementos">Suplementos</a></li><li><a href="index.html#mitos">Mitos</a></li><li><a href="index.html#faq">Preguntas</a></li><li><a href="index.html#glosario">Abreviaturas</a></li></ul></div>
+                    <div><h5>Conecta</h5><ul><li><a href="index.html#tienda">Planes</a></li><li><a href="index.html#historia">Mi historia</a></li><li><a href="index.html#conecta">Contacto</a></li><li><a href="index.html#contacto">Contacto</a></li></ul></div>
+                </div>
+            </div>
+            <div class="canal-rapido" style="margin:30px 0 0;">
+                <a class="canal-chip wa" href="https://wa.me/34635816502" target="_blank" rel="noopener">635 81 65 02</a>
+                <a class="canal-chip ig" href="https://www.instagram.com/astro10__/" target="_blank" rel="noopener">@astro10__</a>
+                <a class="canal-chip mail" href="mailto:ivanib2007@icloud.com">ivanib2007@icloud.com</a>
+            </div>
+            <div class="foot-mega" aria-hidden="true"><span>A</span><span>T</span><span>R</span><span>—</span><span>G</span><span>Y</span><span>M</span></div>
+            <div class="foot-bottom">
+                <span>© <span id="anioActual">2026</span> Iván · ATR-GYM. Todos los derechos reservados.</span>
+                <span class="v">v6.0 · TERUEL</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="atr-base.js"></script>
+    <script>
+        // ============================================
+        // Boxeo — combinaciones y temporizador de rounds
+        // ============================================
+        (function () {
+            'use strict';
+            const $ = id => document.getElementById(id);
+            const NOMBRES = { 1: 'Jab', 2: 'Directo', 3: 'Gancho izq.', 4: 'Gancho der.', 5: 'Uppercut izq.', 6: 'Uppercut der.', Esq: 'Esquiva', Rod: 'Rodar', Atrás: 'Paso atrás' };
+            const COMBOS = [
+                ['1', '1-1', '1-2', '1-1-2', '2-3', '1-2-3', '1-6', '3-2', '1-2-1'],
+                ['1-2-3-2', '1-2-Esq-2', '1-1-2-3', '1-6-3-2', '2-3-2', '1-2-5-2', '3-3-2', '1-2-Atrás-2', '1-Esq-2-3'],
+                ['1-2-3-Rod-3-2', '1-2-Esq-2-3-2', '1-6-3-2-Rod-2', '2-Esq-2-3-4', '1-1-2-Rod-4-3', '5-2-3-Atrás-2', '1-2-3-6-3-2', '3-Rod-3-2-Esq-2']
+            ];
+            const pintar = (el, txt, combo) => {
+                el.innerHTML = combo.split('-').map((c, i) => `<span style="animation-delay:${i * 90}ms">${c}</span>`).join('<span style="opacity:.35">-</span>');
+                if (txt) txt.textContent = combo.split('-').map(c => NOMBRES[c] || c).join(' · ');
+            };
+
+            // cabecera: una combinación nueva cada pocos segundos
+            const hero = $('heroCombo');
+            if (hero && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                let k = 0;
+                const heroLista = ['1-2', '1-2-3', '1-1-2', '2-3-2', '1-6-3-2', '1-2-Esq-2'];
+                setInterval(() => { k = (k + 1) % heroLista.length; pintar(hero, $('heroComboTxt'), heroLista[k]); }, 2600);
+            }
+
+            // generador
+            const grupo = $('comboNivel');
+            const nivel = () => +grupo.querySelector('[aria-pressed="true"]').dataset.v;
+            grupo.addEventListener('click', e => {
+                const b = e.target.closest('button'); if (!b) return;
+                grupo.querySelectorAll('button').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+                nuevo();
+            });
+            let ultimo = '';
+            function nuevo() {
+                const lista = COMBOS[nivel()];
+                let c; do { c = lista[Math.floor(Math.random() * lista.length)]; } while (c === ultimo && lista.length > 1);
+                ultimo = c;
+                pintar($('combo'), $('comboTxt'), c);
+                ATR.pitido(660, .08);
+            }
+            $('comboNuevo').addEventListener('click', nuevo);
+            let auto = null;
+            $('comboAuto').addEventListener('click', () => {
+                if (auto) { clearInterval(auto); auto = null; $('comboAuto').textContent = 'Automático'; return; }
+                nuevo();
+                auto = setInterval(nuevo, +$('comboCada').value * 1000);
+                $('comboAuto').textContent = 'Parar';
+            });
+            $('comboCada').addEventListener('change', () => { if (auto) { clearInterval(auto); auto = setInterval(nuevo, +$('comboCada').value * 1000); } });
+
+            // temporizador de rounds
+            const sel = $('rjRounds');
+            sel.innerHTML = Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}"${i === 5 ? ' selected' : ''}>${i + 1}</option>`).join('');
+            const pant = $('relojPantalla'), tiempo = $('relojTiempo'), fase = $('relojFase'), roundTxt = $('relojRound'), anillo = $('relojAnillo'), start = $('rjStart');
+            const fmt = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+            let estado = 'listo', round = 1, fin = 0, dur = 0, pausa = null, tick = null, avisado = false;
+            const conf = () => ({ rounds: +sel.value, trabajo: +$('rjDur').value, descanso: +$('rjDesc').value, prep: +$('rjPrep').value });
+            const campana = () => { ATR.pitido(1320, .5); ATR.pitido(1320, .5, .35); ATR.pitido(1320, .7, .7); };
+            function fijarFase(nueva, segundos) {
+                estado = nueva; dur = segundos; fin = Date.now() + segundos * 1000; avisado = false;
+                pant.classList.remove('trabajo', 'descanso', 'aviso10');
+                pant.classList.add(nueva === 'descanso' ? 'descanso' : 'trabajo');
+                fase.textContent = nueva === 'prep' ? 'Prepárate' : nueva === 'trabajo' ? 'Boxea' : 'Descanso';
+                if (nueva === 'trabajo') campana();
+                if (nueva === 'descanso') { ATR.pitido(1320, .9); }
+            }
+            function pintarReloj() {
+                const c = conf();
+                const resta = pausa != null ? Math.ceil(pausa / 1000) : Math.max(0, Math.ceil((fin - Date.now()) / 1000));
+                tiempo.textContent = estado === 'listo' ? fmt(c.trabajo) : fmt(resta);
+                roundTxt.textContent = estado === 'hecho' ? 'Sesión terminada' : `Round ${round} de ${c.rounds}`;
+                anillo.style.setProperty('--p', estado === 'listo' || !dur ? 0 : (1 - resta / dur) * 100);
+                if (estado === 'trabajo' && resta <= 10 && resta > 0 && !avisado) { avisado = true; pant.classList.add('aviso10'); ATR.pitido(520, .1); ATR.pitido(520, .1, .15); }
+                return resta;
+            }
+            function bucle() {
+                const resta = pintarReloj();
+                if (resta > 0 || pausa != null) return;
+                const c = conf();
+                if (estado === 'prep') fijarFase('trabajo', c.trabajo);
+                else if (estado === 'trabajo') {
+                    if (round >= c.rounds) { estado = 'hecho'; clearInterval(tick); tick = null; fase.textContent = '¡Buen trabajo!'; pant.classList.remove('aviso10'); ATR.pitido(1320, 1.2); start.textContent = 'Empezar'; pintarReloj(); return; }
+                    fijarFase('descanso', c.descanso);
+                } else if (estado === 'descanso') { round++; fijarFase('trabajo', c.trabajo); }
+            }
+            start.addEventListener('click', () => {
+                if (estado === 'listo' || estado === 'hecho') {
+                    round = 1; pausa = null;
+                    fijarFase('prep', conf().prep);
+                    tick = setInterval(bucle, 200);
+                    start.textContent = 'Pausa';
+                } else if (pausa == null) {
+                    pausa = Math.max(0, fin - Date.now()); clearInterval(tick); tick = null;
+                    fase.textContent = 'Pausa'; start.textContent = 'Seguir';
+                } else {
+                    fin = Date.now() + pausa; pausa = null;
+                    fase.textContent = estado === 'descanso' ? 'Descanso' : estado === 'prep' ? 'Prepárate' : 'Boxea';
+                    tick = setInterval(bucle, 200); start.textContent = 'Pausa';
+                }
+                pintarReloj();
+            });
+            function reiniciar() {
+                clearInterval(tick); tick = null; estado = 'listo'; round = 1; pausa = null; dur = 0;
+                pant.classList.remove('trabajo', 'descanso', 'aviso10');
+                fase.textContent = 'Listo'; start.textContent = 'Empezar';
+                pintarReloj();
+            }
+            $('rjReset').addEventListener('click', reiniciar);
+            ['rjRounds', 'rjDur', 'rjDesc', 'rjPrep'].forEach(i => $(i).addEventListener('change', () => { if (estado === 'listo' || estado === 'hecho') reiniciar(); }));
+            pintarReloj();
+        })();
+    </script>
+    <script src="atr-barra.js"></script>
+    <script src="atr-anim.js"></script>
+    <script src="atr-vidrio.js"></script>
+    <script defer src="atr-3d-motor.js"></script>
+    <script defer src="atr-3d-boxeo.js"></script>
+</body>
+
+</html>
