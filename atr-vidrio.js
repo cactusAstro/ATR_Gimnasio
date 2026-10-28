@@ -32,9 +32,19 @@
         defs = document.createElementNS(SVGNS, 'defs');
         s.appendChild(defs); document.body.appendChild(s);
     }
+    // con esquinas continuas (squircle) el borde de la lente sigue esa misma curva
+    const continuas = CSS.supports('corner-shape', 'squircle');
+    // los mapas se guardan por tamaño: la barra de pestañas o el menú cambian de tamaño
+    // al encogerse y volver, y así no se recalculan píxel a píxel cada vez
+    const mapas = new Map();
+    function mapa(w, h, radio, banda) {
+        const clave = [w, h, radio, banda].join();
+        if (!mapas.has(clave)) mapas.set(clave, calcularMapa(w, h, radio, banda));
+        return mapas.get(clave);
+    }
     // mapa de desplazamiento de un rectángulo redondeado: cero en el centro y
     // máximo en el borde, siempre en la dirección de la normal (rojo = x, verde = y)
-    function mapa(w, h, radio, banda) {
+    function calcularMapa(w, h, radio, banda) {
         const k = Math.min(1, 360 / Math.max(w, h));            // a menos resolución en piezas grandes
         const W = Math.max(8, Math.round(w * k)), H = Math.max(8, Math.round(h * k));
         const c = document.createElement('canvas'); c.width = W; c.height = H;
@@ -43,10 +53,15 @@
         for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
             const px = (i + .5) / k - hw, py = (j + .5) / k - hh;
             const qx = Math.abs(px) - (hw - r), qy = Math.abs(py) - (hh - r);
-            const fuera = Math.hypot(Math.max(qx, 0), Math.max(qy, 0));
+            // en la esquina: arco de círculo, o superelipse de grado 4 si las esquinas son continuas
+            const ex = Math.max(qx, 0), ey = Math.max(qy, 0);
+            const fuera = continuas ? Math.pow(ex ** 4 + ey ** 4, .25) : Math.hypot(ex, ey);
             const dist = -(fuera + Math.min(Math.max(qx, qy), 0) - r);   // distancia al borde, positiva dentro
             let nx = 0, ny = 0;
-            if (qx > 0 && qy > 0) { const l = Math.hypot(qx, qy) || 1; nx = qx / l * Math.sign(px); ny = qy / l * Math.sign(py); }
+            if (qx > 0 && qy > 0) {
+                const gx = continuas ? qx ** 3 : qx, gy = continuas ? qy ** 3 : qy, l = Math.hypot(gx, gy) || 1;
+                nx = gx / l * Math.sign(px); ny = gy / l * Math.sign(py);
+            }
             else if (qx > qy) nx = Math.sign(px); else ny = Math.sign(py);
             const f = dist > 0 ? Math.pow(Math.max(0, 1 - dist / banda), 2.2) : 0;
             const o = (j * W + i) * 4;
@@ -78,53 +93,79 @@
         el.style.setProperty(variable, `url(#${id})`);
     }
     const LENTES = [['.atr-nav', 34, 16], ['.barra-pestanas', 40, 18], ['.fab', 22, 12], ['.carrito-flotante', 22, 12], ['.chat-burbuja', 22, 12]];
+    const deLente = el => LENTES.find(([sel]) => el.matches(sel));
     function lentes() { LENTES.forEach(([sel, esc, banda]) => document.querySelectorAll(sel).forEach(el => lente(el, esc, banda))); }
     if (conLente) {
         raiz.classList.add('con-lente');
+        // solo se rehace la pieza que ha cambiado de tamaño, cuando deja de cambiar
+        const cambiadas = new Set();
         let espera;
-        const rehacer = () => { clearTimeout(espera); espera = setTimeout(lentes, 120); };
+        const rehacer = () => {
+            clearTimeout(espera);
+            espera = setTimeout(() => { cambiadas.forEach(el => { const d = deLente(el); if (d) lente(el, d[1], d[2]); }); cambiadas.clear(); }, 120);
+        };
         if ('ResizeObserver' in window) {
-            const ro = new ResizeObserver(rehacer);
+            const ro = new ResizeObserver(en => { en.forEach(x => cambiadas.add(x.target)); rehacer(); });
             addEventListener('load', () => LENTES.forEach(([sel]) => document.querySelectorAll(sel).forEach(el => ro.observe(el))));
         }
-        addEventListener('resize', rehacer);
         addEventListener('load', lentes);
     }
 
     // ---------- 2) una sola luz ----------
-    let anguloObjetivo = 215, angulo = 215, luzPend = false;
-    function moverLuz() {
-        luzPend = false;
-        let delta = ((anguloObjetivo - angulo + 540) % 360) - 180;
-        angulo += delta * .12;
-        raiz.style.setProperty('--luz-angulo', angulo.toFixed(1) + 'deg');
-        if (Math.abs(delta) > .3) { luzPend = true; requestAnimationFrame(moverLuz); }
+    // El ángulo se escribe solo en las piezas con filo de luz que están a la vista (antes iba
+    // en la raíz y obligaba a recalcular los estilos de toda la página en cada fotograma).
+    // En el móvil la luz gira al desplazarse, y ahí solo en las piezas fijas: el menú, la
+    // barra de pestañas y los botones flotantes; las tarjetas no se repintan mientras pasan.
+    const CON_LUZ = tactil
+        ? '.atr-nav, .barra-pestanas, .fab, .carrito-flotante, .chat-burbuja, .chat-ventana, .modal-contenido, .trofeos, .lector, .timer-panel'
+        : '.atr-nav, .barra-pestanas, .fab, .carrito-flotante, .chat-burbuja, .chat-ventana, .modal-contenido, .trofeos, .lector, .dd-panel, ' +
+        '.timer-panel, .lente-pestana, .btn-iron, .sup-btn, .tabs-calculadoras, .dis-card, .sup-card, .producto-card, .con-selector';
+    let anguloObjetivo = 215, angulo = 215, luzViva = false;
+    const textoLuz = () => angulo.toFixed(1) + 'deg';
+    const iluminadas = new Set();
+    const obsLuz = 'IntersectionObserver' in window ? new IntersectionObserver(en => en.forEach(x => {
+        if (x.isIntersecting) { iluminadas.add(x.target); x.target.style.setProperty('--luz-angulo', textoLuz()); }
+        else iluminadas.delete(x.target);
+    })) : null;
+    function vigilarLuz() {
+        if (!obsLuz || reduce) return;
+        document.querySelectorAll(CON_LUZ).forEach(el => { if (!el._luz) { el._luz = 1; obsLuz.observe(el); } });
     }
-    const pedirLuz = () => { if (!luzPend && !reduce) { luzPend = true; requestAnimationFrame(moverLuz); } };
-    if (!tactil) addEventListener('pointermove', e => {
-        anguloObjetivo = Math.atan2(e.clientX - innerWidth / 2, -(e.clientY - innerHeight / 2)) * 180 / Math.PI;
-        pedirLuz();
-    }, { passive: true });
-    else addEventListener('scroll', () => { anguloObjetivo = 200 + scrollY * .045; pedirLuz(); }, { passive: true });
 
     // ---------- 3) reflejo que sigue al puntero ----------
     const CRISTAL = '.atr-nav, .dd-panel, .barra-pestanas, .fab, .carrito-flotante, .chat-burbuja, .chat-ventana, .modal-contenido, .trofeos, .lector, ' +
         '.timer-panel, .sup-card, .producto-card, .tip-card, .dis-card, .mito-card, .cx, .test-card, .atr-form-card, .tab-contenido, .consejo, ' +
         '.timeline-card, .dia-card, .btn-iron, .sup-btn, .bx, .btn-anadir-carrito';
-    let pieza = null, px = 0, py = 0, pendiente = false;
-    function reflejar() {
-        pendiente = false;
-        if (!pieza) return;
-        const r = pieza.getBoundingClientRect();
-        if (!r.width || !r.height) return;
-        pieza.style.setProperty('--mx', ((px - r.left) / r.width * 100).toFixed(1) + '%');
-        pieza.style.setProperty('--my', ((py - r.top) / r.height * 100).toFixed(1) + '%');
+    let pieza = null, px = 0, py = 0, reflejoPend = false, cuadroPend = false;
+    // luz y reflejo comparten fotograma: primero se mide la pieza y después se escribe todo
+    function cuadro() {
+        cuadroPend = false;
+        const r = reflejoPend && pieza ? pieza.getBoundingClientRect() : null;
+        if (r && r.width && r.height) {
+            pieza.style.setProperty('--mx', ((px - r.left) / r.width * 100).toFixed(1) + '%');
+            pieza.style.setProperty('--my', ((py - r.top) / r.height * 100).toFixed(1) + '%');
+        }
+        reflejoPend = false;
+        if (luzViva) {
+            const delta = ((anguloObjetivo - angulo + 540) % 360) - 180;
+            angulo += delta * .12;
+            const v = textoLuz();
+            iluminadas.forEach(el => el.style.setProperty('--luz-angulo', v));
+            luzViva = Math.abs(delta) > .3;
+            if (luzViva) pedirCuadro();
+        }
     }
-    if (!reduce) addEventListener('pointermove', e => {
-        px = e.clientX; py = e.clientY;
-        pieza = e.target && e.target.closest ? e.target.closest(CRISTAL) : null;
-        if (!pendiente) { pendiente = true; requestAnimationFrame(reflejar); }
-    }, { passive: true });
+    function pedirCuadro() { if (!cuadroPend) { cuadroPend = true; requestAnimationFrame(cuadro); } }
+    if (!reduce) {
+        if (!tactil) addEventListener('pointermove', e => {
+            anguloObjetivo = Math.atan2(e.clientX - innerWidth / 2, -(e.clientY - innerHeight / 2)) * 180 / Math.PI;
+            px = e.clientX; py = e.clientY;
+            pieza = e.target && e.target.closest ? e.target.closest(CRISTAL) : null;
+            luzViva = reflejoPend = true;
+            pedirCuadro();
+        }, { passive: true });
+        else addEventListener('scroll', () => { anguloObjetivo = 200 + scrollY * .045; luzViva = true; pedirCuadro(); }, { passive: true });
+    }
 
     // ---------- 4) selector de cristal ----------
     // Una lente de cristal marca la opción elegida en la barra de pestañas, en
@@ -321,7 +362,7 @@
     }
     montarSegmentados();
     let esperaSeg;
-    new MutationObserver(() => { clearTimeout(esperaSeg); esperaSeg = setTimeout(montarSegmentados, 250); }).observe(document.body, { childList: true, subtree: true });
+    new MutationObserver(() => { clearTimeout(esperaSeg); esperaSeg = setTimeout(() => { montarSegmentados(); vigilarLuz(); }, 250); }).observe(document.body, { childList: true, subtree: true });
 
     // menú superior del ordenador: la lente acompaña al ratón entre las opciones
     if (matchMedia('(hover: hover) and (min-width: 921px)').matches) {
@@ -361,14 +402,17 @@
     if (!enPortada) marcar('disciplinas');
 
     // pestaña activa según el apartado visible; al bajar se encoge, al subir se abre
+    // (las posiciones de los apartados se guardan y solo se vuelven a medir si cambia la altura de la página)
     const secciones = enPortada ? PESTANAS.map(([id]) => document.getElementById(id)).filter(Boolean) : [];
+    let tops = [], altoVentana = innerHeight;
+    const medir = () => { altoVentana = innerHeight; tops = secciones.map(s => s.getBoundingClientRect().top + scrollY); };
     let ultimoY = scrollY, pend = false;
     function alDesplazar() {
         pend = false;
         const y = scrollY;
         if (secciones.length && performance.now() > fijada) {
             let actual = 'top';
-            for (const s of secciones) if (s.getBoundingClientRect().top < innerHeight * .4) actual = s.id;
+            secciones.forEach((s, i) => { if (tops[i] - y < altoVentana * .4) actual = s.id; });
             marcar(actual);
         }
         if (!reduce) {
@@ -379,8 +423,16 @@
         document.body.classList.toggle('en-portada', y < 420);
         ultimoY = y;
     }
-    addEventListener('scroll', () => { if (!pend) { pend = true; requestAnimationFrame(alDesplazar); } }, { passive: true });
+    const pedirPestana = () => { if (!pend) { pend = true; requestAnimationFrame(alDesplazar); } };
+    addEventListener('scroll', pedirPestana, { passive: true });
+    addEventListener('resize', () => { medir(); pedirPestana(); }, { passive: true });
+    if (secciones.length && 'ResizeObserver' in window) {
+        let esperaMedir = 0;
+        new ResizeObserver(() => { cancelAnimationFrame(esperaMedir); esperaMedir = requestAnimationFrame(() => { medir(); pedirPestana(); }); }).observe(document.body);
+    }
+    medir();
     alDesplazar();
+    vigilarLuz();
 
     // ---------- 6) entradas escalonadas: cada tarjeta un poco después que la anterior ----------
     addEventListener('load', () => {

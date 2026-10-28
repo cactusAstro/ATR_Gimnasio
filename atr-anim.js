@@ -85,10 +85,11 @@
     const hero = $('#top');
     if (lienzo && hero) {
         const ctx = lienzo.getContext('2d');
-        let dpr = 1, ancho = 0, alto = 0, motas = [], heroVisible = true, raf = 0, ultimo = 0;
+        let dpr = 1, ancho = 0, alto = 0, arribaHero = 0, motas = [], heroVisible = true, raf = 0, ultimo = 0;
         const crear = () => {
             const r = hero.getBoundingClientRect();
-            dpr = Math.min(devicePixelRatio || 1, 2); ancho = r.width; alto = r.height;
+            // motas de polvo: no necesitan toda la resolución de la pantalla (menos píxeles que borrar cada fotograma)
+            dpr = Math.min(devicePixelRatio || 1, 1.5); ancho = r.width; alto = r.height; arribaHero = r.top + scrollY;
             lienzo.width = ancho * dpr; lienzo.height = alto * dpr;
             const n = Math.round(clamp(ancho * alto / 16000, 30, 110));
             motas = Array.from({ length: n }, () => ({
@@ -106,6 +107,9 @@
         const pintar = dt => {
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             ctx.clearRect(0, 0, ancho, alto);
+            ctx.fillStyle = 'rgb(246, 236, 214)';
+            // solo se dibujan las motas que caen dentro de la pantalla
+            const desde = scrollY - arribaHero - 8, hasta = desde + vh + 16;
             for (const m of motas) {
                 if (dt) {
                     m.f += dt * .6;
@@ -114,9 +118,11 @@
                     if (m.y < -10) { m.y = alto + 10; m.x = Math.random() * ancho; }
                     if (m.x > ancho + 10) m.x = -10; else if (m.x < -10) m.x = ancho + 10;
                 }
-                ctx.fillStyle = `rgba(246, 236, 214, ${(luz(m.x, m.y) * m.a).toFixed(3)})`;
+                if (m.y < desde || m.y > hasta) continue;
+                ctx.globalAlpha = luz(m.x, m.y) * m.a;
                 ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, 6.283); ctx.fill();
             }
+            ctx.globalAlpha = 1;
         };
         const bucle = now => {
             raf = 0;
@@ -129,7 +135,11 @@
         addEventListener('resize', () => { crear(); if (reduce) pintar(0); }, { passive: true });
         if (reduce) pintar(0);
         else {
-            new IntersectionObserver(en => { heroVisible = en[0].isIntersecting; arrancar(); }).observe(hero);
+            new IntersectionObserver(en => {
+                heroVisible = en[0].isIntersecting;
+                hero.classList.toggle('hero-fuera', !heroVisible);     // y sus animaciones en bucle se paran
+                arrancar();
+            }).observe(hero);
             document.addEventListener('visibilitychange', arrancar);
         }
     }
@@ -173,85 +183,97 @@
         });
     }
 
+    // Todo lo que se mueve con el scroll va en una sola pasada por fotograma, y solo
+    // cuando hay scroll: primero se mide todo y después se escribe (medir después de
+    // escribir obliga al navegador a recalcular la página entera). Lo que no está a la
+    // vista no se calcula.
+    const cerca = new Set();
+    const obsCerca = 'IntersectionObserver' in window ? new IntersectionObserver(en => {
+        en.forEach(x => x.isIntersecting ? cerca.add(x.target) : cerca.delete(x.target));
+        pedir();
+    }, { rootMargin: '25% 0px' }) : null;
+    const vigilar = el => { if (!el) return; if (obsCerca) obsCerca.observe(el); else cerca.add(el); };
+    const pinta = (el, prop, v) => { if (el['_' + prop] !== v) { el['_' + prop] = v; el.style.setProperty(prop, v); } };
+
     // ---------- 6) Consejos y prompts: tarjetas que se apilan ----------
     const pilas = $$('#consejos, #ia');
-    pilas.forEach(sec => { sec.classList.add('apilar'); $$('.tip-card', sec).forEach((c, n) => c.style.setProperty('--n', n)); });
-    const apilarActivo = () => matchMedia('(min-width: 900px) and (min-height: 700px)').matches && !reduce;
-    function actualizarPilas() {
-        if (!apilarActivo()) return;
+    pilas.forEach(sec => { sec.classList.add('apilar'); sec._cartas = $$('.tip-card', sec); sec._cartas.forEach((c, n) => c.style.setProperty('--n', n)); vigilar(sec); });
+    const mqPilas = matchMedia('(min-width: 900px) and (min-height: 700px)');
+    // al salir del tamaño en que se apilan, las tarjetas vuelven a su estado normal
+    const soltarPilas = () => pilas.forEach(sec => sec._cartas.forEach(c => { pinta(c, 'transform', ''); pinta(c, 'filter', ''); }));
+    (mqPilas.addEventListener ? mqPilas.addEventListener('change', () => { if (!mqPilas.matches) soltarPilas(); pedir(); }) : 0);
+    function medirPilas(out) {
+        if (reduce || !mqPilas.matches) return;
         pilas.forEach(sec => {
-            const cartas = $$('.tip-card', sec);
-            cartas.forEach((c, i) => {
-                const sig = cartas[i + 1];
-                if (!sig) { c.style.transform = ''; c.style.filter = ''; return; }
-                const r = c.getBoundingClientRect(), rs = sig.getBoundingClientRect();
-                const tapado = clamp((r.bottom - rs.top) / r.height, 0, 1);
-                c.style.transform = `scale(${1 - tapado * .05})`;
-                c.style.filter = `brightness(${1 - tapado * .4})`;
-            });
+            if (!cerca.has(sec)) return;
+            const cartas = sec._cartas;
+            for (let i = 0; i < cartas.length - 1; i++) {
+                const r = cartas[i].getBoundingClientRect(), rs = cartas[i + 1].getBoundingClientRect();
+                out.push([cartas[i], clamp((r.bottom - rs.top) / r.height, 0, 1)]);
+            }
         });
     }
 
     // ---------- 7) Historia: la línea avanza con la lectura ----------
+    const historia = $('#historia');
     const linea = $('#historia .timeline-container');
     const hitos = $$('#historia .timeline-item');
-    function actualizarHistoria() {
-        if (!linea) return;
+    vigilar(historia);
+    function medirHistoria() {
+        if (!linea || !cerca.has(historia)) return null;
         const r = linea.getBoundingClientRect();
-        const p = clamp((vh * .62 - r.top) / r.height, 0, 1);
-        linea.style.setProperty('--prog', reduce ? 1 : p);
-        hitos.forEach(h => h.classList.toggle('encendido', reduce || h.getBoundingClientRect().top < vh * .62));
+        return { p: reduce ? 1 : clamp((vh * .62 - r.top) / r.height, 0, 1), luces: hitos.map(h => reduce || h.getBoundingClientRect().top < vh * .62) };
     }
 
     // ---------- 8) Pie: ATR—GYM grande que sube despacio ----------
     const mega = $$('.foot-mega span');
-    function actualizarPie() {
-        if (!mega.length) return;
+    if (mega.length) vigilar(mega[0].parentElement);
+    function medirPie() {
+        if (!mega.length || !cerca.has(mega[0].parentElement)) return null;
         const r = mega[0].parentElement.getBoundingClientRect();
-        const p = clamp((vh - r.top) / (r.height + vh * .35), 0, 1);
-        mega.forEach((s, i) => {
-            const q = reduce ? 1 : clamp(p * 1.6 - i * .06, 0, 1);
-            s.style.setProperty('--sube', ((1 - ease(q)) * 100) + '%');
-        });
+        return clamp((vh - r.top) / (r.height + vh * .35), 0, 1);
     }
 
     // ---------- 9) Indicador lateral de "serie" ----------
+    // (si la hoja de estilos lo oculta, ni se crea; la sección actual sale de posiciones guardadas)
     const secciones = $$('body > section[id], main > section[id]');
-    let indicador = null;
+    let indicador = null, barraInd = null, txtInd = null, tops = [], totalScroll = 0;
     if (secciones.length) {
         indicador = document.createElement('div');
         indicador.className = 'indicador';
         indicador.setAttribute('aria-hidden', 'true');
         indicador.innerHTML = '<b id="indTxt">SERIE 01/' + String(secciones.length).padStart(2, '0') + '</b><div class="ind-barra"><i></i></div>';
         document.body.appendChild(indicador);
+        if (getComputedStyle(indicador).display === 'none') { indicador.remove(); indicador = null; }
+        else { barraInd = indicador.querySelector('.ind-barra i'); txtInd = indicador.querySelector('#indTxt'); }
     }
-    function actualizarIndicador() {
+    function medirPosiciones() {
         if (!indicador) return;
+        tops = secciones.map(s => s.getBoundingClientRect().top + scrollY);
+        totalScroll = document.documentElement.scrollHeight - vh;
+    }
+    function indiceSeccion(y) {
         let idx = 0;
-        secciones.forEach((s, i) => { if (s.getBoundingClientRect().top < vh * .5) idx = i; });
-        const total = document.documentElement.scrollHeight - vh;
-        indicador.querySelector('.ind-barra i').style.transform = `scaleY(${total > 0 ? scrollY / total : 0})`;
-        $('#indTxt').textContent = 'SERIE ' + String(idx + 1).padStart(2, '0') + '/' + String(secciones.length).padStart(2, '0');
+        for (let i = 0; i < tops.length; i++) if (tops[i] - y < vh * .5) idx = i;
+        return idx;
     }
 
     // ---------- 10) Menú: se esconde al bajar, vuelve al subir ----------
     const nav = $('#atrNav'), menu = $('#atrMenu');
     let ultimoY = scrollY;
-    function actualizarNav() {
-        const y = scrollY, abierto = menu && (menu.classList.contains('open') || $('.dd.open'));
-        if (nav) nav.classList.toggle('oculta', !abierto && y > ultimoY && y > 400);
-        ultimoY = y;
-    }
 
-    // ---------- 11) Cinta: avanza despacio y siempre igual ----------
+    // ---------- 11) Cinta: avanza despacio y siempre igual (animación CSS, fuera del hilo principal) ----------
     const cinta = $('.cinta-track');
-    let cintaX = 0;
-    function moverCinta(dt) {
-        if (!cinta || reduce) return;
-        const mitad = cinta.scrollWidth / 2;
-        cintaX -= .04 * dt;
-        if (cintaX <= -mitad) cintaX += mitad;
-        cinta.style.transform = `translateX(${cintaX.toFixed(1)}px)`;
+    if (cinta && !reduce && getComputedStyle(cinta.parentElement).display !== 'none') {
+        const medirCinta = () => {
+            const mitad = cinta.scrollWidth / 2;
+            cinta.style.setProperty('--cinta-dist', -mitad + 'px');
+            cinta.style.setProperty('--cinta-dur', (mitad / 40).toFixed(2) + 's');      // 40 px por segundo
+        };
+        medirCinta();
+        addEventListener('resize', medirCinta, { passive: true });
+        cinta.classList.add('cinta-viva');
+        if ('IntersectionObserver' in window) new IntersectionObserver(en => cinta.classList.toggle('cinta-quieta', !en[0].isIntersecting)).observe(cinta.parentElement);
     }
 
     // ---------- 12) Números de la portada que cuentan al aparecer ----------
@@ -280,24 +302,68 @@
         };
     }
 
-    // ---------- Bucle principal ----------
-    let hayScroll = true, tPrev = performance.now();
-    addEventListener('scroll', () => { hayScroll = true; }, { passive: true });
-    addEventListener('resize', () => { hayScroll = true; }, { passive: true });
-    function frame(now) {
-        const dt = Math.min(64, now - tPrev); tPrev = now;
-        moverCinta(dt);
-        if (hayScroll) {
-            hayScroll = false;
-            actualizarPilas();
-            actualizarHistoria();
-            actualizarPie();
-            actualizarIndicador();
-            actualizarNav();
+    // ---------- Pasada del scroll: solo cuando hay movimiento ----------
+    let pendiente = false;
+    function pedir() { if (!pendiente) { pendiente = true; requestAnimationFrame(alDesplazar); } }
+    function alDesplazar() {
+        pendiente = false;
+        const y = scrollY;
+        // 1) lecturas
+        const cartas = [];
+        medirPilas(cartas);
+        const hist = medirHistoria();
+        const pie = medirPie();
+        const abierto = menu && (menu.classList.contains('open') || $('.dd.open'));
+        // 2) escrituras
+        cartas.forEach(([c, t]) => { pinta(c, 'transform', `scale(${(1 - t * .05).toFixed(4)})`); pinta(c, 'filter', `brightness(${(1 - t * .4).toFixed(3)})`); });
+        if (hist) {
+            pinta(linea, '--prog', hist.p.toFixed(4));
+            hitos.forEach((h, i) => h.classList.toggle('encendido', hist.luces[i]));
         }
-        requestAnimationFrame(frame);
+        if (pie !== null) mega.forEach((s, i) => {
+            const q = reduce ? 1 : clamp(pie * 1.6 - i * .06, 0, 1);
+            pinta(s, '--sube', ((1 - ease(q)) * 100).toFixed(2) + '%');
+        });
+        if (indicador) {
+            pinta(barraInd, 'transform', `scaleY(${totalScroll > 0 ? (y / totalScroll).toFixed(4) : 0})`);
+            const txt = 'SERIE ' + String(indiceSeccion(y) + 1).padStart(2, '0') + '/' + String(secciones.length).padStart(2, '0');
+            if (txtInd.textContent !== txt) txtInd.textContent = txt;
+        }
+        if (nav) nav.classList.toggle('oculta', !abierto && y > ultimoY && y > 400);
+        ultimoY = y;
     }
-    requestAnimationFrame(frame);
+    addEventListener('scroll', pedir, { passive: true });
+    addEventListener('resize', () => { medirPosiciones(); pedir(); }, { passive: true });
+    // las posiciones de las secciones se guardan y se vuelven a medir solo si cambia la altura de la página
+    if (indicador && 'ResizeObserver' in window) {
+        let esperaMedir = 0;
+        new ResizeObserver(() => { cancelAnimationFrame(esperaMedir); esperaMedir = requestAnimationFrame(() => { medirPosiciones(); pedir(); }); }).observe(document.body);
+    }
+    medirPosiciones();
+    pedir();
+
+    // ---------- 15) Lo que queda lejos no se maqueta ni se pinta ----------
+    // Con la página ya cargada se mide cada sección y se le pone content-visibility:auto con
+    // su alto real: el navegador se salta las que no se ven (la portada mide unos 38.000 px)
+    // y la barra de desplazamiento no da saltos. Si cambia el ancho, se vuelve a medir.
+    // (La primera sección siempre se ve al llegar y las del 3D vigilan su propia escena.)
+    (function aparcarSecciones() {
+        if (!CSS.supports('content-visibility', 'auto')) return;
+        const lista = $$('body > section, main > section, body > footer').filter((s, i) => i > 0 && !s.matches('.gym3d-seccion'));
+        if (!lista.length) return;
+        const medir = () => {
+            lista.forEach(s => { s.style.contentVisibility = ''; });
+            const altos = lista.map(s => s.getBoundingClientRect().height);
+            lista.forEach((s, i) => { s.style.containIntrinsicSize = 'auto ' + Math.round(altos[i]) + 'px'; s.style.contentVisibility = 'auto'; });
+        };
+        const cuandoLibre = () => (window.requestIdleCallback ? requestIdleCallback(medir, { timeout: 2000 }) : setTimeout(medir, 300));
+        if (document.readyState === 'complete') cuandoLibre(); else addEventListener('load', cuandoLibre, { once: true });
+        let ancho = innerWidth, espera = 0;
+        addEventListener('resize', () => {
+            if (innerWidth === ancho) return;       // en el móvil, la barra del navegador solo cambia el alto
+            ancho = innerWidth; clearTimeout(espera); espera = setTimeout(cuandoLibre, 400);
+        }, { passive: true });
+    })();
 
     // ---------- 14) Móvil: los botones flotantes se apartan mientras lees ----------
     (function botonesQueSeApartan() {

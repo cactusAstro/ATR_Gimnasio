@@ -10,7 +10,6 @@
 
     // ---- Menú: hamburguesa y desplegables
     const nav = $('#atrNav'), menu = $('#atrMenu'), burger = $('#atrBurger');
-    addEventListener('scroll', () => nav && nav.classList.toggle('scrolled', scrollY > 8), { passive: true });
     if (burger) burger.addEventListener('click', () => {
         const abierto = menu.classList.toggle('open');
         burger.setAttribute('aria-expanded', String(abierto));
@@ -39,13 +38,23 @@
         cerrarDD(); menu.classList.remove('open'); burger && burger.setAttribute('aria-expanded', 'false');
     });
 
-    // ---- Barra de progreso de lectura
+    // ---- Menú con sombra y barra de progreso de lectura: una sola pasada por fotograma.
+    // La barra se mueve con transform y la altura de la página se guarda (leerla en cada
+    // evento de scroll obligaba a recalcular la página).
     const barra = $('#scrollProgress');
-    addEventListener('scroll', () => {
-        if (!barra) return;
-        const total = document.documentElement.scrollHeight - innerHeight;
-        barra.style.width = (total > 0 ? scrollY / total * 100 : 0) + '%';
-    }, { passive: true });
+    let total = 0, pend = false;
+    const medirTotal = () => { total = document.documentElement.scrollHeight - innerHeight; };
+    function alDesplazar() {
+        pend = false;
+        const y = scrollY;
+        if (nav) nav.classList.toggle('scrolled', y > 8);
+        if (barra) barra.style.transform = 'scaleX(' + (total > 0 ? Math.min(1, y / total).toFixed(4) : 0) + ')';
+    }
+    const pedir = () => { if (!pend) { pend = true; requestAnimationFrame(alDesplazar); } };
+    addEventListener('scroll', pedir, { passive: true });
+    addEventListener('resize', () => { medirTotal(); pedir(); }, { passive: true });
+    if ('ResizeObserver' in window) new ResizeObserver(() => { medirTotal(); pedir(); }).observe(document.body);
+    medirTotal(); pedir();
 
     // ---- Revelado al hacer scroll (también barras de porcentaje)
     const obs = new IntersectionObserver(en => en.forEach(x => {

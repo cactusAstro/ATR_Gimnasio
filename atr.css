@@ -3525,3 +3525,18 @@ html body .dia-aviso { border: 0 !important; border-radius: var(--r-3) !importan
     html body .form-check-input { width: 20px; height: 20px; margin: 0; flex: none; }
     html body .mito-pista, html body .ruta-top .estado, html body .dia-truco { font-size: 12px; }
 }
+
+/* ============================================================
+   FLUIDEZ — lo que se mueve va por la tarjeta gráfica y nada trabaja si no se ve
+   ============================================================ */
+/* la barra de progreso se estira con transform (antes cambiaba su ancho y recalculaba la página) */
+html body .scroll-progress { width: 100%; transform: scaleX(0); transform-origin: 0 50%; will-change: transform; }
+/* la cinta avanza con una animación CSS, fuera del hilo principal, y se para cuando no se ve */
+.cinta-track.cinta-viva { animation: cinta-avanza var(--cinta-dur, 60s) linear infinite; }
+.cinta-track.cinta-quieta { animation-play-state: paused; }
+@keyframes cinta-avanza { to { transform: translateX(var(--cinta-dist, -50%)); } }
+/* la portada para el destello del titular y el latido cuando ya no se ve */
+html body .atr-hero.hero-fuera .hero-title .l2, html body .atr-hero.hero-fuera .hero-eyebrow::before { animation-play-state: paused; }
+/* «Serie 01, 02…» sale del número que guarda cada etiqueta: un contador CSS no cruzaría
+   las secciones que el navegador deja sin pintar (content-visibility) */
+html body .atr-eyebrow[data-serie]::before { content: 'Serie ' attr(data-serie) '  —' !important; }

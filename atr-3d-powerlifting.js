@@ -423,12 +423,14 @@
                 // ---------- el pabellón ----------
                 carga('Levantando el pabellón…');
                 const epo = texEpoxi(T);
+                await respirar();
                 const sx = SALA.x * 2, sz = SALA.z1 - SALA.z0;
                 const suelo = malla(new TH.PlaneGeometry(sx, sz), new TH.MeshPhysicalMaterial({
                     map: repetida(epo.mapa, sx / 4, sz / 4), roughnessMap: repetida(epo.rug, sx / 4, sz / 4), normalMap: repetida(epo.normal, sx / 4, sz / 4), normalScale: new TH.Vector2(.25, .25),
                     roughness: .9, clearcoat: .9, clearcoatRoughness: .12
                 }), { sombra: false });
                 suelo.rotation.x = -Math.PI / 2; suelo.position.z = (SALA.z0 + SALA.z1) / 2; escena.add(suelo);
+                await respirar();
                 const bloque = texBloque(T);
                 const muro = (w, h, x, y, z, ry) => {
                     const m = malla(new TH.PlaneGeometry(w, h), new TH.MeshStandardMaterial({ color: 0x1d1e21, roughness: .92, normalMap: repetida(bloque, w / 1.2, h / 1.2), normalScale: new TH.Vector2(.9, .9) }), { sombra: false });
@@ -516,13 +518,15 @@
                 // ---------- discos y barra ----------
                 carga('Cargando 250 kg…');
                 const geoD = {}, geoH = {}, matD = {};
-                Object.entries(DISCOS).forEach(([k, d]) => {
+                // cada disco pinta su textura: de uno en uno, con un respiro entre medias
+                for (const [k, d] of Object.entries(DISCOS)) {
                     const t = texDisco(Number(k), d);
                     geoD[k] = geoDisco(TH, d.r, d.g); geoH[k] = geoCubo(TH, d.g);
                     matD[k] = d.cromo
                         ? new TH.MeshStandardMaterial({ map: t.mapa, normalMap: t.normal, metalness: 1, roughness: .14 })
                         : new TH.MeshPhysicalMaterial({ map: t.mapa, normalMap: t.normal, normalScale: new TH.Vector2(.9, .9), roughness: .38, metalness: .05, clearcoat: .85, clearcoatRoughness: .22 });
-                });
+                    await respirar();
+                }
                 const cuboMat = kit.metal(0xd8dadc, { rug: .18, escala: 1 });
                 // pone un disco con las letras mirando hacia +X girado ry (y rz), con una vuelta propia aleatoria
                 const disco = (peso, x, y, z, ry = 0, rz = 0, base = null) => {

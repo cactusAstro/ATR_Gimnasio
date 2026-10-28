@@ -24,7 +24,11 @@
         'three/addons/utils/BufferGeometryUtils.js',
     ];
     window.ATR3D = window.ATR3D || {};
-    window.ATR3D.motor = Promise.all(modulos.map(m => import(m))).then(([THREE, { EffectComposer }, { RenderPass }, { UnrealBloomPass }, { GTAOPass }, { OutputPass }, { ShaderPass }, { RoundedBoxGeometry }, { RectAreaLightUniformsLib }, { Reflector }, { mergeGeometries }]) => {
+    // Three.js pesa unos 700 KB: se pide con la página ya cargada y el navegador libre,
+    // o antes si la escena se acerca a la pantalla (las escenas esperan a esta promesa)
+    let arrancar;
+    window.ATR3D.motor = new Promise(r => { arrancar = r; }).then(() => Promise.all(modulos.map(m => import(m)))).then(([THREE, { EffectComposer }, { RenderPass }, { UnrealBloomPass }, { GTAOPass }, { OutputPass }, { ShaderPass }, { RoundedBoxGeometry }, { RectAreaLightUniformsLib }, { Reflector }, { mergeGeometries }]) => {
+        fuentes3D();
         const FUENTE = "'Big Shoulders Display', 'Arial Narrow', sans-serif";
         const MONO = "'JetBrains Mono', ui-monospace, Menlo, monospace";
         const TEXTO = "'Archivo', 'Segoe UI', system-ui, sans-serif";
@@ -49,7 +53,50 @@
         const lerp = (a, b, t) => a + (b - a) * t;
         const suave = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
-        const respirar = () => new Promise(r => requestAnimationFrame(() => r()));
+        // deja pintar el fotograma y sigue justo después (no dentro de él), para no retrasarlo
+        const respirar = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
+        // Compila los shaders por tandas pequeñas. Tras cada tanda se espera a la gráfica con una
+        // «valla» que se consulta entre fotogramas: preguntar por cada shader (como hace compileAsync)
+        // obliga a esperar a que terminen todos y congelaba la página casi dos segundos.
+        // Se compilan para la textura intermedia donde dibuja el postproceso: para la pantalla
+        // saldrían otras variantes y se volverían a compilar al dibujar.
+        function valla(renderer) {
+            const gl = renderer.getContext();
+            if (!gl.fenceSync) return respirar();
+            const f = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+            gl.flush();
+            return new Promise(r => {
+                const mirar = () => { if (gl.getSyncParameter(f, gl.SYNC_STATUS) === gl.SIGNALED) { gl.deleteSync(f); r(); } else setTimeout(mirar, 8); };
+                setTimeout(mirar, 8);
+            });
+        }
+        async function compilar(renderer, escena, camara, destino) {
+            const antes = renderer.getRenderTarget(), vistos = new Set(), piezas = [];
+            escena.traverse(o => {
+                if (!o.material || !(o.isMesh || o.isPoints || o.isLine || o.isSprite)) return;
+                const clave = (Array.isArray(o.material) ? o.material : [o.material]).map(m => m.uuid).join() + (o.isInstancedMesh ? 'i' : '') + (o.isSkinnedMesh ? 's' : '') + (o.isPoints ? 'p' : o.isLine ? 'l' : '');
+                if (!vistos.has(clave)) { vistos.add(clave); piezas.push(o); }
+            });
+            for (let i = 0; i < piezas.length; i += 3) {
+                renderer.setRenderTarget(destino);
+                try { piezas.slice(i, i + 3).forEach(o => renderer.compile(o, camara, escena)); } catch (e) { }
+                renderer.setRenderTarget(antes);
+                await valla(renderer);
+            }
+        }
+        // sube las texturas a la gráfica por tandas cortas (si no, lo haría de golpe el primer fotograma)
+        async function subirTexturas(renderer, escena) {
+            const texturas = new Set();
+            escena.traverse(o => (Array.isArray(o.material) ? o.material : o.material ? [o.material] : []).forEach(m => {
+                for (const k in m) if (m[k] && m[k].isTexture) texturas.add(m[k]);
+                if (m.uniforms) Object.values(m.uniforms).forEach(u => { if (u && u.value && u.value.isTexture) texturas.add(u.value); });
+            }));
+            let t0 = performance.now();
+            for (const t of texturas) {
+                renderer.initTexture(t);
+                if (performance.now() - t0 > 8) { await respirar(); t0 = performance.now(); }
+            }
+        }
 
         function lienzo(w, h) {
             const c = document.createElement('canvas');
@@ -188,6 +235,11 @@
             const n2 = (s) => new THREE.Vector2(s, s);
             return {
                 normales, rugosidad,
+                // genera los relieves de uno en uno, con un respiro entre cada uno: así ninguno
+                // se junta con los demás en el mismo trozo de trabajo al montar la escena
+                async precalentar(respirar) {
+                    for (const hacer of [...Object.values(normales), ...Object.values(rugosidad)]) { hacer(); await respirar(); }
+                },
                 cuero: (color, { rug = .42, brillo = .7, escala = 4, fuerza = .5 } = {}) => new THREE.MeshPhysicalMaterial({
                     color, roughness: rug, roughnessMap: repetida(rugosidad.uso(), 1, 1), clearcoat: brillo, clearcoatRoughness: .32,
                     normalMap: repetida(normales.cuero(), escala, escala), normalScale: n2(fuerza)
@@ -477,9 +529,12 @@
             renderer.toneMappingExposure = def.exposicion || 1;
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            // las sombras se calculan una sola vez por fotograma (sin esto, la oclusión
+            // ambiental y los espejos las volvían a dibujar en cada una de sus pasadas)
+            renderer.shadowMap.autoUpdate = false;
             RectAreaLightUniformsLib.init();
 
-            try { await Promise.race([Promise.all([document.fonts.load(`900 64px "Big Shoulders Display"`), document.fonts.load(`700 32px "JetBrains Mono"`), document.fonts.load(`700 32px "Archivo"`)]), new Promise(r => setTimeout(r, 1500))]); } catch (e) { }
+            await Promise.race([fuentes3D(), new Promise(r => setTimeout(r, 1500))]);
 
             const escena = new THREE.Scene();
             escena.background = new THREE.Color(def.fondo || 0x050505);
@@ -490,6 +545,7 @@
             const ctx = { THREE, escena, kit, calidad, renderer, camara, carga: UI.carga, respirar, reducir };
             UI.carga('Modelando…');
             await respirar();
+            await kit.precalentar(respirar);
             const vivo = await def.construir(ctx) || {};
             if (def.entorno) {
                 escena.environment = entorno(renderer, def.entorno, def.fondoEntorno);
@@ -598,9 +654,11 @@
                 bloom.resolution.set(w * .5, h * .5);
                 camara.aspect = w / h;
                 camara.updateProjectionMatrix();
-                if (est.t >= 1) { const e = encuadre(planos[est.i]); cam.copy(e.cam); mira.copy(e.mira); fov = e.fov; colocar(performance.now() / 1000); composer.render(); }
+                if (est.t >= 1) { const e = encuadre(planos[est.i]); cam.copy(e.cam); mira.copy(e.mira); fov = e.fov; colocar(performance.now() / 1000); if (listo) { renderer.shadowMap.needsUpdate = true; composer.render(); } }
                 pedir();
             }
+            // hasta que los shaders están compilados no se dibuja nada (así no hay tirones)
+            let listo = false, conTiempo = [];
             new ResizeObserver(ajustar).observe(c);
 
             // ---- bucle ----
@@ -627,8 +685,9 @@
                 est.pitch = lerp(est.pitch, est.pitchObj, .08);
                 colocar(t);
                 if (vivo.actualizar && !reducir) vivo.actualizar(t, dt, est.i);
-                escena.traverse(o => { if (o.material && o.material.uniforms && o.material.uniforms.uTiempo) o.material.uniforms.uTiempo.value = t; });
+                for (const m of conTiempo) m.uniforms.uTiempo.value = t;
                 pelicula.uniforms.uTiempo.value = t;
+                renderer.shadowMap.needsUpdate = true;
                 composer.render();
                 // si el aparato va justo, se baja la resolución poco a poco
                 medidos++; if (dt > .045) lentos++;
@@ -638,7 +697,7 @@
                 }
                 if (visible && !document.hidden && (!reducir || est.t < 1 || Math.abs(est.yaw - est.yawObj) > .0005)) pedir();
             }
-            function pedir() { if (!raf && visible) { ultimo = performance.now(); raf = requestAnimationFrame(frame); } }
+            function pedir() { if (!raf && visible && listo) { ultimo = performance.now(); raf = requestAnimationFrame(frame); } }
             new IntersectionObserver(en => { visible = en[0].isIntersecting; if (visible) pedir(); }, { rootMargin: '80px' }).observe(contenedor);
             document.addEventListener('visibilitychange', () => { if (!document.hidden) pedir(); });
 
@@ -647,9 +706,21 @@
             colocar(performance.now() / 1000);
             UI.carga('Puliendo detalles…');
             await respirar();
-            try { renderer.compile(escena, camara); } catch (e) { }
+            // shaders y texturas se preparan por partes, sin congelar la página
+            await compilar(renderer, escena, camara, composer.renderTarget1);
+            await subirTexturas(renderer, escena);
+            // los materiales con reloj propio (haces, polvo…) se reúnen una vez, no en cada fotograma
+            escena.traverse(o => { if (o.material && o.material.uniforms && o.material.uniforms.uTiempo && !conTiempo.includes(o.material)) conTiempo.push(o.material); });
+            // primer dibujo en dos tiempos: la escena con sus sombras, y después el postproceso
+            renderer.shadowMap.needsUpdate = true;
+            renderer.setRenderTarget(composer.renderTarget1); renderer.render(escena, camara); renderer.setRenderTarget(null);
+            await valla(renderer);
             composer.render();
+            listo = true;
+            pedir();
             contenedor.classList.add('escena3d-lista');
+            // cuando la pantalla de carga termina de fundirse se quita: así el spinner deja de girar
+            setTimeout(() => { const carga = contenedor.querySelector('.escena3d-carga'); if (carga) carga.remove(); }, 1000);
             if (/diagnostico/.test(location.hash + location.search)) {
                 const pre = document.createElement('pre'); pre.className = 'escena3d-diagnostico'; contenedor.appendChild(pre);
                 const gl = renderer.getContext(), ext = gl.getExtension('WEBGL_debug_renderer_info');
@@ -681,6 +752,38 @@
         return { THREE, RoundedBoxGeometry, Reflector, mergeGeometries, FUENTE, MONO, TEXTO, calidadDispositivo, generador, lerp, suave, v3, respirar, lienzo, textura, repetida, dibujar, ruido, celdas, normalDe, grisDe, crearKit, malla, caja, redondeada, torno, cilindro, entre, colocarEntre, catenaria, tubo, cadena, fusionar, haz, polvo, lampara, entorno, montarEscena };
     });
     window.ATR3D.motor.catch(err => avisarFallo('.escena3d', err));
+    cuandoHagaFalta('.escena3d', () => arrancar());
+    // pide el 3D cuando hace falta: con la página ya cargada y el navegador libre,
+    // o en cuanto la escena está a dos pantallas (con «ahorro de datos», solo entonces)
+    function cuandoHagaFalta(selector, empezar) {
+        const els = document.querySelectorAll(selector);
+        if (!els.length) return;
+        let hecho = false, obs = null;
+        const ir = () => { if (hecho) return; hecho = true; if (obs) obs.disconnect(); empezar(); };
+        if (!('IntersectionObserver' in window)) { ir(); return; }
+        obs = new IntersectionObserver(en => { if (en.some(x => x.isIntersecting)) ir(); }, { rootMargin: '200% 0px' });
+        els.forEach(el => obs.observe(el));
+        const red = navigator.connection;
+        if (red && (red.saveData || /2g/.test(red.effectiveType || ''))) return;
+        const libre = () => window.requestIdleCallback ? requestIdleCallback(ir, { timeout: 4000 }) : setTimeout(ir, 1200);
+        if (document.readyState === 'complete') setTimeout(libre, 300); else addEventListener('load', () => setTimeout(libre, 300), { once: true });
+    }
+    // las fuentes de los rótulos 3D solo se piden cuando se monta una escena (la web usa la del sistema)
+    function fuentes3D() {
+        let l = document.getElementById('fuentes3d');
+        if (!l) {
+            l = document.createElement('link');
+            l.id = 'fuentes3d'; l.rel = 'stylesheet';
+            l.href = 'https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=JetBrains+Mono:wght@600;700&family=Archivo:wght@700;800&display=swap';
+            l._lista = new Promise(r => { l.onload = l.onerror = r; });
+            document.head.appendChild(l);
+        }
+        return l._lista.then(() => Promise.all([
+            document.fonts.load('900 64px "Big Shoulders Display"'), document.fonts.load('800 64px "Big Shoulders Display"'),
+            document.fonts.load('700 32px "JetBrains Mono"'), document.fonts.load('600 32px "JetBrains Mono"'),
+            document.fonts.load('800 32px "Archivo"'), document.fonts.load('700 32px "Archivo"')
+        ])).catch(() => { });
+    }
     // si el 3D no llega a cargar (sin conexión o navegador antiguo) se avisa en vez de dejar la caja vacía
     function avisarFallo(selector, err) {
         console.error(err);
