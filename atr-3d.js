@@ -833,7 +833,18 @@
             new ResizeObserver(ajustar).observe(lienzoGL);
 
             // ---- bucle: solo mientras se ve ----
-            let visible = false, raf = 0, ultimo = performance.now(), cuadro = 0;
+            let visible = false, raf = 0, ultimo = performance.now(), cuadro = 0, previo = 0, suma = 0, medidos = 0;
+            // si la escena no llega a unos 54 fps de media se baja la resolución un poco cada vez
+            // (fluidez antes que nitidez); el ajuste se recuerda para la próxima visita
+            let pixeles = Math.min(devicePixelRatio || 1, calidad.pixeles);
+            try { pixeles = Math.max(1, pixeles - (Number(localStorage.getItem('atr3d-calidad-portada')) || 0) * .25); } catch (e) { }
+            renderer.setPixelRatio(pixeles); composer.setPixelRatio(pixeles);
+            function bajarResolucion() {
+                if (pixeles <= 1) return false;
+                pixeles = Math.max(1, pixeles - .25); renderer.setPixelRatio(pixeles); composer.setPixelRatio(pixeles);
+                try { localStorage.setItem('atr3d-calidad-portada', String((Number(localStorage.getItem('atr3d-calidad-portada')) || 0) + 1)); } catch (e) { }
+                return true;
+            }
             // la cámara mira a su zona, con el giro del arrastre y un balanceo muy suave
             function colocarCamara(t) {
                 const balanceo = reducir || arrastre ? 0 : Math.sin(t * .18) * .06;
@@ -845,6 +856,9 @@
             function frame(ahora) {
                 raf = 0;
                 const dt = Math.min(.05, (ahora - ultimo) / 1000); ultimo = ahora;
+                const intervalo = previo ? ahora - previo : 0; previo = ahora;
+                if (intervalo) { medidos++; suma += Math.min(intervalo, 100); }
+                if (medidos >= 30) { if (suma / medidos > 18.5 && bajarResolucion()) ajustar(); medidos = suma = 0; }
                 const t = ahora / 1000;
                 if (estado.t < 1) {
                     estado.t = Math.min(1, (ahora - estado.inicio) / 1700);
@@ -863,7 +877,7 @@
                 }
                 composer.render();
                 const quieto = estado.t >= 1 && Math.abs(estado.yaw - estado.yawObj) < .0005 && Math.abs(estado.pitch - estado.pitchObj) < .0005;
-                if (visible && !document.hidden && (!reducir || !quieto)) pedirFrame();
+                if (visible && !document.hidden && (!reducir || !quieto)) pedirFrame(); else previo = 0;
             }
             function pedirFrame() { if (!raf && visible && listo) { ultimo = performance.now(); raf = requestAnimationFrame(frame); } }
             new IntersectionObserver(en => { visible = en[0].isIntersecting; if (visible) pedirFrame(); }, { rootMargin: '120px' }).observe(contenedor);

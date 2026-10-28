@@ -662,11 +662,32 @@
             new ResizeObserver(ajustar).observe(c);
 
             // ---- bucle ----
-            let visible = false, raf = 0, ultimo = performance.now(), lentos = 0, medidos = 0;
+            let visible = false, raf = 0, ultimo = performance.now(), previo = 0, suma = 0, medidos = 0, cuadro = 0;
+            // Escalones de calidad si la escena no llega a unos 54 fps de media (por debajo, en una
+            // pantalla de 60 Hz los fotogramas salen a destiempo y se nota el tirón): primero la resolución, después
+            // los espejos (que vuelven a dibujar la escena entera) a media resolución, luego los
+            // espejos un fotograma sí y otro no y, por último, las sombras igual (solo se mueven
+            // piezas pequeñas, no se nota). El escalón se recuerda para la próxima visita.
+            const espejos = [];
+            const claveCalidad = 'atr3d-calidad-' + (contenedor.dataset.escena || def.etiqueta || '');
+            let escalon = 0;
+            function bajarCalidad() {
+                if (pixeles > 1) { pixeles = calidad.apple ? 1 : Math.max(1, pixeles - .25); renderer.setPixelRatio(pixeles); composer.setPixelRatio(pixeles); }
+                else if (espejos.length && escalon < 1) { escalon = 1; espejos.forEach(e => { const rt = e.getRenderTarget(); rt.setSize(Math.round(rt.width / 2), Math.round(rt.height / 2)); }); }
+                else if (espejos.length && escalon < 2) {
+                    escalon = 2;
+                    espejos.forEach(e => { const reflejar = e.onBeforeRender; e.onBeforeRender = function () { if (cuadro & 1) return; reflejar.apply(this, arguments); }; });
+                }
+                else if (escalon < 3) escalon = 3;
+                else return false;
+                try { localStorage.setItem(claveCalidad, String((Number(localStorage.getItem(claveCalidad)) || 0) + 1)); } catch (e) { }
+                return true;
+            }
             est.ultimoCambio = performance.now();
             function frame(ahora) {
                 raf = 0;
                 const dt = Math.min(.05, (ahora - ultimo) / 1000); ultimo = ahora;
+                const intervalo = previo ? ahora - previo : 0; previo = ahora; cuadro++;
                 const t = ahora / 1000;
                 if (est.t < 1) {
                     est.t = Math.min(1, (ahora - est.inicio) / 2200);
@@ -687,15 +708,18 @@
                 if (vivo.actualizar && !reducir) vivo.actualizar(t, dt, est.i);
                 for (const m of conTiempo) m.uniforms.uTiempo.value = t;
                 pelicula.uniforms.uTiempo.value = t;
-                renderer.shadowMap.needsUpdate = true;
+                if (escalon < 3 || !(cuadro & 1)) renderer.shadowMap.needsUpdate = true;
                 composer.render();
-                // si el aparato va justo, se baja la resolución poco a poco
-                medidos++; if (dt > .045) lentos++;
-                if (medidos >= 90) {
-                    if (lentos > 45 && pixeles > 1) { pixeles = calidad.apple ? 1 : Math.max(1, pixeles - .25); renderer.setPixelRatio(pixeles); composer.setPixelRatio(pixeles); ajustar(); }
-                    medidos = lentos = 0;
+                // si el aparato no llega, se baja la resolución. Se mide el tiempo real entre dos
+                // fotogramas seguidos: antes se contaba desde que se pedía el fotograma, así que
+                // uno lento nunca salía lento y la escena se quedaba a 20 fps con toda la resolución
+                // (la primera tanda es corta para que el ajuste llegue cuanto antes)
+                if (intervalo) { medidos++; suma += Math.min(intervalo, 100); }
+                if (medidos >= (cuadro < 60 ? 20 : 40)) {
+                    if (suma / medidos > 18.5 && bajarCalidad()) ajustar();
+                    medidos = suma = 0;
                 }
-                if (visible && !document.hidden && (!reducir || est.t < 1 || Math.abs(est.yaw - est.yawObj) > .0005)) pedir();
+                if (visible && !document.hidden && (!reducir || est.t < 1 || Math.abs(est.yaw - est.yawObj) > .0005)) pedir(); else previo = 0;
             }
             function pedir() { if (!raf && visible && listo) { ultimo = performance.now(); raf = requestAnimationFrame(frame); } }
             new IntersectionObserver(en => { visible = en[0].isIntersecting; if (visible) pedir(); }, { rootMargin: '80px' }).observe(contenedor);
@@ -711,6 +735,12 @@
             await subirTexturas(renderer, escena);
             // los materiales con reloj propio (haces, polvo…) se reúnen una vez, no en cada fotograma
             escena.traverse(o => { if (o.material && o.material.uniforms && o.material.uniforms.uTiempo && !conTiempo.includes(o.material)) conTiempo.push(o.material); });
+            // si en otra visita hubo que bajar la calidad, se empieza ya en ese escalón
+            escena.traverse(o => { if (o.isReflector) espejos.push(o); });
+            let aprendido = 0;
+            try { aprendido = Number(localStorage.getItem(claveCalidad)) || 0; } catch (e) { }
+            for (let i = 0; i < aprendido; i++) { const antes = localStorage.getItem(claveCalidad); if (!bajarCalidad()) break; try { localStorage.setItem(claveCalidad, antes); } catch (e) { } }
+            if (aprendido) ajustar();
             // primer dibujo en dos tiempos: la escena con sus sombras, y después el postproceso
             renderer.shadowMap.needsUpdate = true;
             renderer.setRenderTarget(composer.renderTarget1); renderer.render(escena, camara); renderer.setRenderTarget(null);
