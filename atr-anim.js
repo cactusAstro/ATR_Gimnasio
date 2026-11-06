@@ -337,5 +337,43 @@
     medirPosiciones();
     pedir();
 
+    // ---------- 15) Saltos dentro de la página ----------
+    // Un salto largo con animación obliga al navegador a pintar, en pleno movimiento, miles de píxeles
+    // de página que nadie va a ver: en un iPhone SE eso dejaba la pantalla en negro entre 0,3 y 1,4 s
+    // cada vez que se tocaba un botón de la barra de abajo. Los saltos largos van directos (como cambiar
+    // de pestaña en una app) y solo los cortos se animan.
+    // (Aquí hubo un content-visibility que calculaba mal el alto de cada sección: los botones aterrizaban
+    // hasta 2.400 px más abajo de su destino. No se vuelve a poner sin medir el aterrizaje en Safari.)
+    function saltar(el, bloque) {
+        const r = el.getBoundingClientRect();
+        const margen = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+        const destino = Math.max(0, bloque === 'center' ? r.top + scrollY - (innerHeight - r.height) / 2 : r.top + scrollY - margen);
+        const largo = Math.abs(destino - scrollY) > innerHeight * 1.5;
+        const raiz = document.documentElement;
+        if (largo || reduce) {
+            raiz.style.scrollBehavior = 'auto';           // directo, aunque el CSS pida animación
+            scrollTo(0, destino);
+            raiz.style.scrollBehavior = '';
+        } else {
+            scrollTo({ top: destino, behavior: 'smooth' });
+        }
+    }
+    window.ATRSaltar = saltar;
+    document.addEventListener('click', ev => {
+        if (ev.defaultPrevented || ev.button || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+        const a = ev.target.closest && ev.target.closest('a[href^="#"]');
+        if (!a || (a.target && a.target !== '_self')) return;
+        let id = a.getAttribute('href').slice(1);
+        try { id = decodeURIComponent(id); } catch (e) { return; }
+        const el = id && document.getElementById(id);
+        if (!el) return;
+        ev.preventDefault();
+        saltar(el, 'start');
+        if (location.hash !== '#' + id) history.pushState(null, '', '#' + id);
+        // como un enlace de verdad: el siguiente tabulador sale desde el destino
+        if (!el.hasAttribute('tabindex')) { el.setAttribute('tabindex', '-1'); el.addEventListener('blur', () => el.removeAttribute('tabindex'), { once: true }); }
+        el.focus({ preventScroll: true });
+    });
+
     // (14: los botones flotantes se apartan junto con el resto de la interfaz, en atr-vidrio.js)
 })();

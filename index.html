@@ -5086,7 +5086,8 @@ Sin tecnicismos y con lenguaje claro.`
                 if (r.extra === 'faq') el.classList.add('activo');
                 else if (r.extra && r.extra.click) r.extra.click();
                 el.classList.add('in', 'visible');
-                el.scrollIntoView({ behavior: 'smooth', block: el.offsetHeight > innerHeight * .75 ? 'start' : 'center' });
+                const bloque = el.offsetHeight > innerHeight * .75 ? 'start' : 'center';
+                if (window.ATRSaltar) ATRSaltar(el, bloque); else el.scrollIntoView({ behavior: 'smooth', block: bloque });
                 el.classList.remove('srch-flash'); void el.offsetWidth; el.classList.add('srch-flash');
                 setTimeout(() => el.classList.remove('srch-flash'), 2100);
             }
