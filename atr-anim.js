@@ -337,28 +337,5 @@
     medirPosiciones();
     pedir();
 
-    // ---------- 15) Lo que queda lejos no se maqueta ni se pinta ----------
-    // Con la página ya cargada se mide cada sección y se le pone content-visibility:auto con
-    // su alto real: el navegador se salta las que no se ven (la portada mide unos 38.000 px)
-    // y la barra de desplazamiento no da saltos. Si cambia el ancho, se vuelve a medir.
-    // (La primera sección siempre se ve al llegar y las del 3D vigilan su propia escena.)
-    (function aparcarSecciones() {
-        if (!CSS.supports('content-visibility', 'auto')) return;
-        const lista = $$('body > section, main > section, body > footer').filter((s, i) => i > 0 && !s.matches('.gym3d-seccion'));
-        if (!lista.length) return;
-        const medir = () => {
-            lista.forEach(s => { s.style.contentVisibility = ''; });
-            const altos = lista.map(s => s.getBoundingClientRect().height);
-            lista.forEach((s, i) => { s.style.containIntrinsicSize = 'auto ' + Math.round(altos[i]) + 'px'; s.style.contentVisibility = 'auto'; });
-        };
-        const cuandoLibre = () => (window.requestIdleCallback ? requestIdleCallback(medir, { timeout: 2000 }) : setTimeout(medir, 300));
-        if (document.readyState === 'complete') cuandoLibre(); else addEventListener('load', cuandoLibre, { once: true });
-        let ancho = innerWidth, espera = 0;
-        addEventListener('resize', () => {
-            if (innerWidth === ancho) return;       // en el móvil, la barra del navegador solo cambia el alto
-            ancho = innerWidth; clearTimeout(espera); espera = setTimeout(cuandoLibre, 400);
-        }, { passive: true });
-    })();
-
     // (14: los botones flotantes se apartan junto con el resto de la interfaz, en atr-vidrio.js)
 })();
