@@ -27,7 +27,9 @@
     // Three.js pesa unos 700 KB: se pide con la página ya cargada y el navegador libre,
     // o antes si la escena se acerca a la pantalla (las escenas esperan a esta promesa)
     let arrancar;
-    window.ATR3D.motor = new Promise(r => { arrancar = r; }).then(() => Promise.all(modulos.map(m => import(m)))).then(([THREE, { EffectComposer }, { RenderPass }, { UnrealBloomPass }, { GTAOPass }, { OutputPass }, { ShaderPass }, { RoundedBoxGeometry }, { RectAreaLightUniformsLib }, { Reflector }, { mergeGeometries }]) => {
+    window.ATR3D.motor = new Promise(r => { arrancar = r; }).then(() => Promise.all(modulos.map(m => import(m)))).then(([THREE0, { EffectComposer }, { RenderPass }, { UnrealBloomPass }, { GTAOPass }, { OutputPass }, { ShaderPass }, { RoundedBoxGeometry }, { RectAreaLightUniformsLib }, { Reflector }, { mergeGeometries }]) => {
+        // en pantallas táctiles, materiales estándar en vez de físicos (perfil ligero: ver atr-3d-fachada.js)
+        const THREE = window.ATR3D_ligero ? ATR3D_ligero(THREE0) : THREE0;
         fuentes3D();
         const FUENTE = "'Big Shoulders Display', 'Arial Narrow', sans-serif";
         const MONO = "'JetBrains Mono', ui-monospace, Menlo, monospace";
@@ -41,6 +43,9 @@
             const apple = /Mac|iPhone|iPad|iPod/.test(navigator.platform || '') || /Macintosh|iPhone|iPad/.test(navigator.userAgent || '');
             // y en Apple se dibuja como el recorrido de la portada: sin antialias en el postproceso y a resolución entera
             const entera = Math.max(1, Math.min(2, Math.round(devicePixelRatio || 1)));
+            // pantalla táctil: perfil ligero (materiales estándar, resolución hasta 1,5, en pausa durante el scroll y, si no
+            // llega a 60 fps, menos resolución y después 30 fps estables)
+            if (window.ATR3D_lite) return { movil: true, lite: true, apple, sombras: 1, sombraTam: 1024, ao: false, reflejos: false, muestras: apple ? 0 : 2, pixeles: Math.min(devicePixelRatio || 1, justo ? 1.25 : 1.5), tex: 512, polvo: 110 };
             if (movil) return { movil: true, apple, sombras: 1, sombraTam: 1024, ao: false, reflejos: false, muestras: apple ? 0 : 2, pixeles: apple ? entera : Math.min(devicePixelRatio || 1, justo ? 1.25 : 1.6), tex: 512, polvo: 110 };
             return { movil: false, apple, sombras: 3, sombraTam: 2048, ao: !justo && !apple, reflejos: true, muestras: apple ? 0 : 4, pixeles: apple ? entera : Math.min(devicePixelRatio || 1, 1.75), tex: 1024, polvo: 280 };
         }
@@ -507,6 +512,8 @@
             const reducir = matchMedia('(prefers-reduced-motion: reduce)').matches;
             const calidad = calidadDispositivo();
             const UI = crearUI(contenedor, def);
+            // cuánto tarda cada fase del montaje (se ve con ?diagnostico, también en el móvil)
+            const t0 = performance.now(), fases = [], fase = n => fases.push([n, Math.round(performance.now() - t0)]);
 
             const c = document.createElement('canvas');
             c.className = 'escena3d-canvas';
@@ -535,6 +542,7 @@
             RectAreaLightUniformsLib.init();
 
             await Promise.race([fuentes3D(), new Promise(r => setTimeout(r, 1500))]);
+            fase('fuentes');
 
             const escena = new THREE.Scene();
             escena.background = new THREE.Color(def.fondo || 0x050505);
@@ -546,11 +554,14 @@
             UI.carga('Modelando…');
             await respirar();
             await kit.precalentar(respirar);
+            fase('relieves');
             const vivo = await def.construir(ctx) || {};
+            fase('escena');
             if (def.entorno) {
                 escena.environment = entorno(renderer, def.entorno, def.fondoEntorno);
                 escena.environmentIntensity = def.intensidadEntorno ?? .35;
             }
+            fase('entorno');
             UI.carga('Iluminando…');
             await respirar();
 
@@ -662,7 +673,10 @@
             new ResizeObserver(ajustar).observe(c);
 
             // ---- bucle ----
-            let visible = false, raf = 0, ultimo = performance.now(), previo = 0, suma = 0, medidos = 0, cuadro = 0;
+            let visible = false, raf = 0, ultimo = performance.now(), previo = 0, suma = 0, medidos = 0, cuadro = 0, ultimoScroll = 0, ultimoDibujo = 0, a30 = false;
+            const cadencia = [];
+            // en táctil no se dibuja mientras la página se desplaza: el scroll va primero
+            if (calidad.lite) addEventListener('scroll', () => { ultimoScroll = performance.now(); }, { passive: true });
             // Escalones de calidad si la escena no llega a unos 54 fps de media (por debajo, en una
             // pantalla de 60 Hz los fotogramas salen a destiempo y se nota el tirón): primero la resolución, después
             // los espejos (que vuelven a dibujar la escena entera) a media resolución, luego los
@@ -672,12 +686,13 @@
             const claveCalidad = 'atr3d-calidad-' + (contenedor.dataset.escena || def.etiqueta || '');
             let escalon = 0;
             function bajarCalidad() {
-                if (pixeles > 1) { pixeles = calidad.apple ? 1 : Math.max(1, pixeles - .25); renderer.setPixelRatio(pixeles); composer.setPixelRatio(pixeles); }
+                if (pixeles > 1) { pixeles = calidad.apple && !calidad.lite ? 1 : Math.max(1, pixeles - .25); renderer.setPixelRatio(pixeles); composer.setPixelRatio(pixeles); }
                 else if (espejos.length && escalon < 1) { escalon = 1; espejos.forEach(e => { const rt = e.getRenderTarget(); rt.setSize(Math.round(rt.width / 2), Math.round(rt.height / 2)); }); }
                 else if (espejos.length && escalon < 2) {
                     escalon = 2;
                     espejos.forEach(e => { const reflejar = e.onBeforeRender; e.onBeforeRender = function () { if (cuadro & 1) return; reflejar.apply(this, arguments); }; });
                 }
+                else if (calidad.lite && !a30) a30 = true;   // táctil: 30 fps estables antes que 40 a saltos
                 else if (escalon < 3) escalon = 3;
                 else return false;
                 try { localStorage.setItem(claveCalidad, String((Number(localStorage.getItem(claveCalidad)) || 0) + 1)); } catch (e) { }
@@ -686,8 +701,14 @@
             est.ultimoCambio = performance.now();
             function frame(ahora) {
                 raf = 0;
+                const seguir = () => { if (visible && !document.hidden) raf = requestAnimationFrame(frame); };
+                // tras la pausa del scroll el primer intervalo no cuenta (si no, parecería un fotograma lento)
+                if (calidad.lite && ahora - ultimoScroll < 160) { previo = 0; seguir(); return; }
+                if (a30 && ahora - ultimoDibujo < 30) { seguir(); return; }
+                ultimoDibujo = ahora;
                 const dt = Math.min(.05, (ahora - ultimo) / 1000); ultimo = ahora;
                 const intervalo = previo ? ahora - previo : 0; previo = ahora; cuadro++;
+                if (intervalo && cadencia.length < 600) cadencia.push(intervalo);
                 const t = ahora / 1000;
                 if (est.t < 1) {
                     est.t = Math.min(1, (ahora - est.inicio) / 2200);
@@ -708,7 +729,7 @@
                 if (vivo.actualizar && !reducir) vivo.actualizar(t, dt, est.i);
                 for (const m of conTiempo) m.uniforms.uTiempo.value = t;
                 pelicula.uniforms.uTiempo.value = t;
-                if (escalon < 3 || !(cuadro & 1)) renderer.shadowMap.needsUpdate = true;
+                if (calidad.lite ? cuadro % 3 === 0 : escalon < 3 || !(cuadro & 1)) renderer.shadowMap.needsUpdate = true;
                 composer.render();
                 // si el aparato no llega, se baja la resolución. Se mide el tiempo real entre dos
                 // fotogramas seguidos: antes se contaba desde que se pedía el fotograma, así que
@@ -716,7 +737,7 @@
                 // (la primera tanda es corta para que el ajuste llegue cuanto antes)
                 if (intervalo) { medidos++; suma += Math.min(intervalo, 100); }
                 if (medidos >= (cuadro < 60 ? 20 : 40)) {
-                    if (suma / medidos > 18.5 && bajarCalidad()) ajustar();
+                    if (suma / medidos > (a30 ? 38 : 18.5) && bajarCalidad()) ajustar();
                     medidos = suma = 0;
                 }
                 if (visible && !document.hidden && (!reducir || est.t < 1 || Math.abs(est.yaw - est.yawObj) > .0005)) pedir(); else previo = 0;
@@ -730,9 +751,12 @@
             colocar(performance.now() / 1000);
             UI.carga('Puliendo detalles…');
             await respirar();
+            fase('postproceso');
             // shaders y texturas se preparan por partes, sin congelar la página
             await compilar(renderer, escena, camara, composer.renderTarget1);
+            fase('shaders');
             await subirTexturas(renderer, escena);
+            fase('texturas');
             // los materiales con reloj propio (haces, polvo…) se reúnen una vez, no en cada fotograma
             escena.traverse(o => { if (o.material && o.material.uniforms && o.material.uniforms.uTiempo && !conTiempo.includes(o.material)) conTiempo.push(o.material); });
             // si en otra visita hubo que bajar la calidad, se empieza ya en ese escalón
@@ -746,20 +770,32 @@
             renderer.setRenderTarget(composer.renderTarget1); renderer.render(escena, camara); renderer.setRenderTarget(null);
             await valla(renderer);
             composer.render();
+            fase('primer dibujo');
             listo = true;
             pedir();
             contenedor.classList.add('escena3d-lista');
+            if (window.ATR3D_quitarFachada) ATR3D_quitarFachada(contenedor);
             // cuando la pantalla de carga termina de fundirse se quita: así el spinner deja de girar
             setTimeout(() => { const carga = contenedor.querySelector('.escena3d-carga'); if (carga) carga.remove(); }, 1000);
             if (/diagnostico/.test(location.hash + location.search)) {
                 const pre = document.createElement('pre'); pre.className = 'escena3d-diagnostico'; contenedor.appendChild(pre);
                 const gl = renderer.getContext(), ext = gl.getExtension('WEBGL_debug_renderer_info');
                 const gpu = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+                const programas = () => renderer.info.programs || [];
+                const fuenteKB = () => Math.round(programas().reduce((n, p) => n + (gl.getAttachedShaders(p.program) || []).reduce((m, sh) => m + (gl.getShaderSource(sh) || '').length, 0), 0) / 1024);
+                const lineaFases = fases.map(([n, t], i) => n + ' ' + (i ? '+' + (t - fases[i - 1][1]) : t)).join(' · ') + ' = ' + fases[fases.length - 1][1] + ' ms';
                 setInterval(() => {
+                    const o = cadencia.slice().sort((a, b) => a - b), q = p => o.length ? o[Math.min(o.length - 1, Math.floor(o.length * p / 100))].toFixed(1) : '–';
+                    const dato = { fases, perfil: calidad.lite ? 'ligero' : 'completo', calidad, pixeles, a30, fotogramas: o.length, p50: q(50), p95: q(95),
+                        max: o.length ? o[o.length - 1].toFixed(0) : '–', programas: programas().length, fuente_kb: fuenteKB(), texturas: renderer.info.memory.textures };
+                    window.ATR3D_diag = dato;
                     pre.textContent = [
                         navigator.userAgent, 'GPU: ' + gpu,
                         `lienzo CSS ${c.clientWidth}×${c.clientHeight} · píxeles ${c.width}×${c.height} · buffer ${gl.drawingBufferWidth}×${gl.drawingBufferHeight}`,
                         `ratio ${pixeles} (pantalla ${devicePixelRatio}) · postproceso ${composer.renderTarget1.width}×${composer.renderTarget1.height}`,
+                        `perfil ${dato.perfil} · montaje: ${lineaFases}`,
+                        `fotogramas ${o.length} · p50 ${dato.p50} ms · p95 ${dato.p95} · máx ${dato.max}${a30 ? ' · a 30 fps' : ''}`,
+                        `programas ${dato.programas} (${dato.fuente_kb} KB de shaders) · texturas ${dato.texturas}`,
                         `calidad ${JSON.stringify(calidad)}`
                     ].join('\n');
                 }, 1000);
@@ -782,7 +818,10 @@
         return { THREE, RoundedBoxGeometry, Reflector, mergeGeometries, FUENTE, MONO, TEXTO, calidadDispositivo, generador, lerp, suave, v3, respirar, lienzo, textura, repetida, dibujar, ruido, celdas, normalDe, grisDe, crearKit, malla, caja, redondeada, torno, cilindro, entre, colocarEntre, catenaria, tubo, cadena, fusionar, haz, polvo, lampara, entorno, montarEscena };
     });
     window.ATR3D.motor.catch(err => avisarFallo('.escena3d', err));
-    cuandoHagaFalta('.escena3d', () => arrancar());
+    // en pantallas táctiles: imagen primero y 3D al tocar; en ordenador, como antes
+    if (window.ATR3D_tactil && window.ATR3D_fachada) {
+        document.querySelectorAll('.escena3d').forEach(el => ATR3D_fachada(el, 'img/3d/' + (el.dataset.escena || 'escena'), 'Toca para explorar en 3D', 'Montando la escena…').then(() => arrancar()));
+    } else cuandoHagaFalta('.escena3d', () => arrancar());
     // pide el 3D cuando hace falta: con la página ya cargada y el navegador libre,
     // o en cuanto la escena está a dos pantallas (con «ahorro de datos», solo entonces)
     function cuandoHagaFalta(selector, empezar) {
