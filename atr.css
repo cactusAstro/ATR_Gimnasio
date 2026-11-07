@@ -3651,13 +3651,6 @@ html body .atr-nav { transition: width var(--t-resorte) var(--resorte), transfor
     /* menús y hojas: aparecen sin desenfoque */
     html body .dd-panel, html body .atr-links, html body .chat-ventana,
     html body .modal-overlay .modal-contenido, html body .trofeos-overlay .trofeos, html body .lector-overlay .lector { filter: none; }
-    /* barra de abajo: al bajar se encoge y se funde sin cambiar de tamaño (antes animaba left, right y height: maqueta en cada fotograma) */
-    .barra-pestanas { transition: transform .45s var(--resorte), opacity .3s ease; }
-    .barra-pestanas.mini { left: 14px; right: 14px; height: 64px; transform: translateY(8px) scale(.94); transform-origin: 50% 100%; }
-    .barra-pestanas a span, .barra-pestanas.mini a span { display: block; max-height: none; margin-top: 0; overflow: visible; transition: opacity .2s ease; }
-    .barra-pestanas.mini a span { opacity: 0; }
-    .barra-pestanas.mini svg { width: 25px; height: 25px; }
-    .barra-pestanas a svg { transition: transform var(--t-vivo) var(--resorte-vivo); }
     /* otra barra fija con desenfoque (índice de las páginas de disciplina) y los textos y botones que flotan sobre la escena 3D:
        con la escena dibujándose a 60 fps, cada uno obligaba a desenfocar de nuevo lo de detrás en cada fotograma */
     html body .pg-indice { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(20, 20, 22, .94); }
