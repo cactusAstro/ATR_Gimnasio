@@ -19,9 +19,12 @@
     const sinTransparencia = matchMedia('(prefers-reduced-transparency: reduce)').matches;
     const raiz = document.documentElement;
     const tactil = matchMedia('(hover: none)').matches;
+    // móviles y tablets: sin refracción SVG (carísima en Android de gama media), sin luz que gira con el scroll y sin
+    // bordes de luz (ver «PERFIL TÁCTIL LIGERO» en atr.css)
+    const grueso = matchMedia('(pointer: coarse)').matches;
 
     // ---------- 1) refracción ----------
-    const conLente = !!navigator.userAgentData && CSS.supports('backdrop-filter', 'blur(1px)') && !sinTransparencia;
+    const conLente = !!navigator.userAgentData && CSS.supports('backdrop-filter', 'blur(1px)') && !sinTransparencia && !grueso;
     const SVGNS = 'http://www.w3.org/2000/svg';
     let defs = null, nLente = 0;
     function prepararDefs() {
@@ -128,7 +131,7 @@
         else iluminadas.delete(x.target);
     })) : null;
     function vigilarLuz() {
-        if (!obsLuz || reduce) return;
+        if (!obsLuz || reduce || grueso) return;
         document.querySelectorAll(CON_LUZ).forEach(el => { if (!el._luz) { el._luz = 1; obsLuz.observe(el); } });
     }
 
@@ -164,7 +167,7 @@
             luzViva = reflejoPend = true;
             pedirCuadro();
         }, { passive: true });
-        else addEventListener('scroll', () => { anguloObjetivo = 200 + scrollY * .045; luzViva = true; pedirCuadro(); }, { passive: true });
+        // (en táctil la luz ya no gira con el scroll: repintaba los bordes de luz de todo lo visible en cada fotograma)
     }
 
     // ---------- 4) selector de cristal ----------

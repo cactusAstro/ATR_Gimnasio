@@ -3593,3 +3593,76 @@ html body .atr-nav { transition: width var(--t-resorte) var(--resorte), transfor
     html body .atr-nav, .barra-pestanas, .barra-pestanas a span, .barra-pestanas a svg,
     html body .fab, html body .carrito-flotante, html body .chat-widget { transition: none; }
 }
+
+/* ============================================================
+   PERFIL TÁCTIL LIGERO — lo que más cuesta de pintar, fuera en móviles y tablets
+   En un iPhone SE (grabación del 6 de noviembre) un tercio de las actualizaciones de pantalla iban a
+   30 fps o peor y, con textos que entran desenfocados o menús que se abren, bajaban a 5–15 por segundo.
+   Lo que más pesa en ese tipo de aparato no es el cálculo sino pintar:
+   · desenfoque de fondo (backdrop-filter): lo repite la GPU en cada fotograma mientras algo pasa detrás
+   · filter: blur() en las entradas y los menús
+   · sombras con 40–50 px de desenfoque en cada tarjeta y bordes de luz hechos con máscaras
+   Aquí se quita solo eso: queda el cristal de la barra de arriba y de la de abajo (ahora con menos
+   pasadas), y todo lo demás pasa a cristal opaco, sombras cortas y entradas de opacidad y
+   desplazamiento. En ordenador (puntero fino) no cambia nada.
+   ============================================================ */
+@media (pointer: coarse) {
+    :root {
+        --vidrio-sombra: 0 4px 12px -6px rgba(0, 0, 0, .55);
+        --vidrio-filo: inset 0 1px 0 rgba(255, 255, 255, .28);
+        --superficie-sombra: inset 0 1px 0 rgba(255, 255, 255, .12);
+    }
+    /* desenfoque de fondo solo en las dos barras fijas, con una pasada menos */
+    html body .atr-nav, html body .barra-pestanas {
+        -webkit-backdrop-filter: blur(14px) saturate(1.5); backdrop-filter: blur(14px) saturate(1.5);
+    }
+    /* el resto del cristal, opaco */
+    html body .dd-panel, html body .fab, html body .carrito-flotante, html body .chat-burbuja, html body .chat-ventana,
+    html body .modal-contenido, html body .trofeos, html body .lector, html body .timer-panel, html body .v4-toast,
+    html body .toast-logro, html body .srch-box, html body .atr-links {
+        -webkit-backdrop-filter: none; backdrop-filter: none;
+        background: var(--vidrio-capa), rgba(30, 30, 32, .96);
+    }
+    html body .modal-overlay, html body .trofeos-overlay, html body .lector-overlay, html body .srch-backdrop {
+        -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(0, 0, 0, .55);
+    }
+    /* bordes de luz hechos con máscara y degradado cónico: quedan el borde de 1 px y el brillo del filo */
+    html body .atr-nav::after, .barra-pestanas::after, html body .fab::after, html body .carrito-flotante::after, html body .chat-burbuja::after,
+    html body .chat-ventana::after, html body .modal-contenido::after, html body .trofeos::after, html body .lector::after, html body .dd-panel::after,
+    html body .timer-panel::after, .lente-pestana::after, html body .btn-iron::after, html body .sup-btn::after, html body .tabs-calculadoras::after,
+    html body .dis-card::after, html body .sup-card::after, html body .producto-card::after, .sel-lente::after, .sel-lupa::after { display: none; }
+    /* tarjetas: sin la sombra grande */
+    html body .sup-card, html body .producto-card, html body .tip-card, html body .dis-card, html body .mito-card, html body .cx,
+    html body .test-card, html body .test-resultado, html body .atr-form-card, html body .tab-contenido,
+    html body .timeline-card, html body .post-card, html body .checkin-card, html body .crear-post-card, html body .subir-foto-card,
+    html body .compromiso-form, html body .compromiso-actual, html body .dia-card, html body .canal-card,
+    html body .glosario-item, html body .pg-dato, html body .ficha, html body .herramienta { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14); }
+    /* entradas al hacer scroll: opacidad y desplazamiento, sin desenfoque ni escala */
+    html body .reveal, html body .animar-scroll, html body .atr-h2.titulo-entra {
+        transform: translateY(14px); filter: none;
+        transition: opacity .45s ease-out, transform .55s cubic-bezier(.2, .8, .2, 1);
+        transition-delay: calc(var(--n, 0) * 40ms);
+    }
+    html body .reveal.in, html body .animar-scroll.visible, html body .atr-h2.titulo-entra.in { transform: none; }
+    /* portada: la misma coreografía, más corta y sin desenfoque; el destello del titular (repinta el texto sin parar) se queda quieto */
+    @keyframes entraApple { from { opacity: 0; transform: translateY(14px); } }
+    html body .atr-hero .atr-wrap > * { animation-duration: .6s; animation-delay: calc(var(--n, 0) * 60ms + 60ms); }
+    html body .hero-title .l2 { animation: entraApple .6s var(--resorte-suave) both; animation-delay: .24s; }
+    /* menús y hojas: aparecen sin desenfoque */
+    html body .dd-panel, html body .atr-links, html body .chat-ventana,
+    html body .modal-overlay .modal-contenido, html body .trofeos-overlay .trofeos, html body .lector-overlay .lector { filter: none; }
+    /* otra barra fija con desenfoque (índice de las páginas de disciplina) y los textos y botones que flotan sobre la escena 3D:
+       con la escena dibujándose a 60 fps, cada uno obligaba a desenfocar de nuevo lo de detrás en cada fotograma */
+    html body .pg-indice { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(20, 20, 22, .94); }
+    html body .gym3d-ficha, html body .gym3d-zonas button, html body .escena3d-ficha, html body .escena3d-pista,
+    html body .escena3d-btn, html body .escena3d-planos button {
+        -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(20, 20, 22, .82);
+    }
+    /* botones de cristal: sin la sombra de 20–24 px */
+    html body .btn-iron, html body .sup-btn, html body .bx, html body .btn-copiar, html body .btn-anadir-carrito, html body .btn-publicar-post,
+    html body .btn-publicar-checkin, html body .btn-compromiso, html body .btn-pago, html body .btn-confirmar-bizum, html body .btn-enviar,
+    html body .btn-cancelar-checkin, html body .btn-borrar, html body .btn-like-post, html body .consejo-copiar, html body .test-opcion {
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .32);
+    }
+    .barra-pestanas > .sel-lente { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), inset 0 -1px 1px rgba(255, 255, 255, .1); }
+}
