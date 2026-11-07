@@ -1,0 +1,34 @@
+# Presupuesto de rendimiento (Lighthouse CI)
+# Mide las cuatro páginas como un móvil de gama media (Lighthouse en modo móvil: CPU ×4 y red 4G lenta,
+# 3 pasadas por página) y falla si alguna se sale del presupuesto de lighthouserc.json:
+#   FCP ≤ 1,8 s · LCP ≤ 2,5 s · TBT ≤ 200 ms · CLS ≤ 0,1 · peso ≤ 400 KB (y aviso si accesibilidad < 90)
+# Se ejecuta en cada pull request hacia main y a mano (pestaña Actions → «Presupuesto» → «Run workflow»).
+# Los informes se guardan en la propia ejecución (artefacto «informes-lighthouse»); no se publican.
+name: Presupuesto
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Lighthouse CI
+        run: npx --yes @lhci/cli@0.14.0 autorun
+      - name: Guardar los informes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informes-lighthouse
+          path: .lighthouseci
+          retention-days: 14
