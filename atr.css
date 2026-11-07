@@ -2507,7 +2507,7 @@ section { border-top: 1px solid rgba(255, 255, 255, 0.07); }
 .chat-burbuja:hover { box-shadow: 0 14px 30px -14px rgba(0, 0, 0, .95); }
 
 /* ---- pantalla de carga ---- */
-#preloader { display: grid; place-items: center; background: var(--negro); transition: opacity .6s ease, visibility .6s ease; }
+#preloader { display: grid; place-items: center; background: var(--negro); transition: opacity .3s ease, visibility .3s ease; }
 #preloader.fuera { opacity: 0; visibility: hidden; }
 #preloader .pre-marca { font-family: var(--f-display); font-weight: 900; font-size: clamp(54px, 10vw, 110px); letter-spacing: .06em; color: var(--marfil); }
 #preloader .pre-marca span { color: var(--rojo); margin: 0 .08em; }

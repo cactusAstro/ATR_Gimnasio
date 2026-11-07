@@ -18,6 +18,9 @@
     addEventListener('resize', () => { vh = innerHeight; }, { passive: true });
 
     // ---------- 1) Pantalla de carga: la barra se carga hasta 165 kg ----------
+    // Antes tardaba 1,1 s en cargar la barra + 0,36 s de pausa y fundido: unos 1,5 s fijos al entrar,
+    // aunque todo cargara al instante (en la grabación del iPhone SE, 1,7 s de 2,9 s hasta ver la portada).
+    // Ahora son 0,35 s, y la portada empieza a entrar mientras la pantalla se funde.
     function listo() {
         if (document.body.classList.contains('listo')) return;
         document.body.classList.add('listo');
@@ -30,16 +33,16 @@
         try { visto = sessionStorage.getItem('atr-intro') === '1'; sessionStorage.setItem('atr-intro', '1'); } catch (e) { }
         const quitar = () => {
             pre.classList.add('fuera');
-            setTimeout(listo, 200);
-            setTimeout(() => pre.remove(), 900);
+            listo();
+            setTimeout(() => pre.remove(), 450);
         };
         if (reduce || visto) { pre.classList.add('fuera'); pre.style.transitionDuration = '0s'; listo(); setTimeout(() => pre.remove(), 50); return; }
-        const kg = $('#preKg'), dur = 1100, t0 = performance.now();
+        const kg = $('#preKg'), dur = 350, t0 = performance.now();
         (function tick(now) {
             const p = clamp((now - t0) / dur, 0, 1);
             if (kg) kg.textContent = Math.round(165 * ease(p));
             pre.style.setProperty('--p', ease(p));
-            if (p < 1) requestAnimationFrame(tick); else setTimeout(quitar, 160);
+            if (p < 1) requestAnimationFrame(tick); else quitar();
         })(t0);
     })();
 
