@@ -4604,6 +4604,8 @@ Sin tecnicismos y con lenguaje claro.`
             let AC = null;
             function audio() {
                 try {
+                    // sin un toque previo el navegador no deja sonar nada: no se crea el contexto (el primero llega a costar 100 ms)
+                    if (!AC && navigator.userActivation && !navigator.userActivation.hasBeenActive) return null;
                     if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
                     if (AC.state === 'suspended') AC.resume();
                     return AC;
@@ -4700,7 +4702,8 @@ Sin tecnicismos y con lenguaje claro.`
             centinela.style.cssText = 'height:1px;margin-top:-1px;pointer-events:none';
             document.body.appendChild(centinela);
             const obsFondo = new IntersectionObserver(en => {
-                if (en[0].isIntersecting) { obsFondo.disconnect(); centinela.remove(); logro('fondo'); }
+                // el logro se apunta fuera del fotograma del scroll (aviso, panel y sonido), cuando el navegador está libre
+                if (en[0].isIntersecting) { obsFondo.disconnect(); centinela.remove(); (window.requestIdleCallback ? f => requestIdleCallback(f, { timeout: 600 }) : f => setTimeout(f, 50))(() => logro('fondo')); }
             }, { rootMargin: '0px 0px 90px 0px' });
             obsFondo.observe(centinela);
 
