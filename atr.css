@@ -3673,3 +3673,24 @@ html body .atr-nav { transition: width var(--t-resorte) var(--resorte), transfor
     }
     .barra-pestanas > .sel-lente { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), inset 0 -1px 1px rgba(255, 255, 255, .1); }
 }
+
+/* ============================================================
+   IMAGEN PREVIA DEL 3D (móviles y tablets) — ver atr-3d-fachada.js
+   La escena se ve al instante como imagen y el 3D se monta al tocarla.
+   ============================================================ */
+.fachada { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.fachada-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .6s ease; }
+/* en el centro de la imagen, como el botón de un vídeo: abajo lo tapaba la barra de pestañas */
+.fachada-boton {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; white-space: nowrap;
+    min-height: 48px; padding: 0 22px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .3);
+    background: rgba(28, 28, 30, .92); color: #F5F5F7; font: 600 15px/1 var(--f-apple-texto, -apple-system, system-ui, sans-serif); letter-spacing: -.01em;
+    transition: opacity .4s ease, transform .2s cubic-bezier(.3, 1.4, .5, 1);
+}
+.fachada-boton:active { transform: translate(-50%, -50%) scale(.96); transition-duration: .12s; }
+.fachada-boton:disabled { opacity: .9; }
+.fachada:has(> .gym3d-ui) > .fachada-boton, .fachada:has(> .escena3d-ui) > .fachada-boton { opacity: 0; }
+/* al estar lista, el lienzo aparece ya entero debajo y solo se funde la imagen: un fundido limpio, sin bajón de luz a medias */
+.fachada > .gym3d-canvas, .fachada > .escena3d-canvas { transition: none; }
+.gym3d-listo .fachada-poster, .gym3d-listo .fachada-boton, .escena3d-lista .fachada-poster, .escena3d-lista .fachada-boton { opacity: 0; pointer-events: none; }
+

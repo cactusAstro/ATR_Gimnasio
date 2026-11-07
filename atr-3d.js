@@ -18,10 +18,14 @@
         'three/addons/postprocessing/UnrealBloomPass.js',
         'three/addons/postprocessing/OutputPass.js',
     ];
-    // Three.js pesa unos 700 KB: se pide cuando la página ya ha cargado y el
-    // navegador está libre, o antes si el gimnasio se acerca a la pantalla.
-    cuandoHagaFalta('.gym3d', () => Promise.all(modulos.map(m => import(m))).then(([THREE, { RoomEnvironment }, { RoundedBoxGeometry }, { EffectComposer }, { RenderPass }, { UnrealBloomPass }, { OutputPass }]) => {
-        fuentes3D();
+    // Móviles y tablets (pantalla táctil): perfil ligero. En un iPhone lo que más tarda al montar la escena es compilar los
+    // shaders; con materiales estándar en vez de físicos (sin barniz ni tela) hay un 20 % menos de código que compilar y la
+    // escena se ve casi igual (medido: un 5 % menos de luz media). El brillo y el entorno se quedan: sin ellos salía un 40 % más
+    // oscura. Además: en pausa mientras la página se desplaza, sombras cada tres fotogramas y, si el aparato no llega a 60 fps,
+    // primero menos resolución y después 30 fps estables. Y no se pide nada hasta que se toca la imagen previa. (atr-3d-fachada.js)
+    const lite = !!window.ATR3D_lite;
+    const arrancar = () => { fuentes3D(); return Promise.all(modulos.map(m => import(m))).then(([THREE0, { RoomEnvironment }, { RoundedBoxGeometry }, { EffectComposer }, { RenderPass }, { UnrealBloomPass }, { OutputPass }]) => {
+        const THREE = window.ATR3D_ligero ? ATR3D_ligero(THREE0) : THREE0;
         const VOLTIO = 0xE8E8ED;
         const TINTA = '#0D0D0C';
         const FUENTE = "'Big Shoulders Display', 'Arial Narrow', sans-serif";
@@ -739,7 +743,10 @@
                 ui.querySelector('.gym3d-carga-txt').textContent = 'Tu navegador no puede mostrar el gimnasio en 3D.';
                 return;
             }
-            const calidad = movil ? { sombras: 1, sombraTam: 1024, polvo: 160, pixeles: 1.5, bloom: .5 } : { sombras: 2, sombraTam: 2048, polvo: 380, pixeles: 2, bloom: 1 };
+            const calidad = movil ? { lite, sombras: 1, sombraTam: 1024, polvo: 160, pixeles: 1.5, bloom: .5 } : { sombras: 2, sombraTam: 2048, polvo: 380, pixeles: 2, bloom: 1 };
+            const diag = /diagnostico/.test(location.search + location.hash);
+            const t0 = performance.now(), fases = [];
+            const fase = n => fases.push([n, Math.round(performance.now() - t0)]);
             renderer.setPixelRatio(Math.min(devicePixelRatio || 1, calidad.pixeles));
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
             renderer.toneMappingExposure = .95;
@@ -756,16 +763,21 @@
             const escena = new THREE.Scene();
             escena.background = new THREE.Color(0x080807);
             escena.fog = new THREE.Fog(0x080807, 30, 70);
+            fase('fuentes');
+            // el entorno también en el perfil ligero: sin él los metales salen negros
             const pmrem = new THREE.PMREMGenerator(renderer);
             escena.environment = pmrem.fromScene(new RoomEnvironment(), .04).texture;
             pmrem.dispose();
             escena.environmentIntensity = .22;
+            fase('entorno');
 
             await respiro();
             const M = crearMateriales();
             await respiro();
+            fase('materiales');
             const { bolsas, polvo } = construirGimnasio(escena, M, calidad);
             await respiro();
+            fase('escena');
 
             const camara = new THREE.PerspectiveCamera(42, 1, .1, 120);
             const composer = new EffectComposer(renderer);
@@ -833,16 +845,23 @@
             new ResizeObserver(ajustar).observe(lienzoGL);
 
             // ---- bucle: solo mientras se ve ----
-            let visible = false, raf = 0, ultimo = performance.now(), cuadro = 0, previo = 0, suma = 0, medidos = 0;
-            // si la escena no llega a unos 54 fps de media se baja la resolución un poco cada vez
-            // (fluidez antes que nitidez); el ajuste se recuerda para la próxima visita
-            let pixeles = Math.min(devicePixelRatio || 1, calidad.pixeles);
-            try { pixeles = Math.max(1, pixeles - (Number(localStorage.getItem('atr3d-calidad-portada')) || 0) * .25); } catch (e) { }
+            let visible = false, raf = 0, ultimo = performance.now(), cuadro = 0, previo = 0, suma = 0, medidos = 0, ultimoScroll = 0, ultimoDibujo = 0;
+            // en táctil no se dibuja mientras la página se desplaza: el scroll va primero
+            if (lite) addEventListener('scroll', () => { ultimoScroll = performance.now(); }, { passive: true });
+            const cadencia = [];
+            // si la escena no llega a unos 54 fps de media se baja la resolución un poco cada vez (fluidez antes que
+            // nitidez); en táctil, ya a la resolución mínima, se pasa a 30 fps estables (mejor que 40 a saltos).
+            // El ajuste se recuerda para la próxima visita.
+            const CLAVE = 'atr3d-calidad-portada';
+            let pixeles = Math.min(devicePixelRatio || 1, calidad.pixeles), a30 = false;
+            const pasosResolucion = Math.ceil((pixeles - 1) / .25 - 1e-6);
+            try { const n = Number(localStorage.getItem(CLAVE)) || 0; pixeles = Math.max(1, pixeles - n * .25); a30 = lite && n > pasosResolucion; } catch (e) { }
             renderer.setPixelRatio(pixeles); composer.setPixelRatio(pixeles);
             function bajarResolucion() {
-                if (pixeles <= 1) return false;
-                pixeles = Math.max(1, pixeles - .25); renderer.setPixelRatio(pixeles); composer.setPixelRatio(pixeles);
-                try { localStorage.setItem('atr3d-calidad-portada', String((Number(localStorage.getItem('atr3d-calidad-portada')) || 0) + 1)); } catch (e) { }
+                if (pixeles > 1) { pixeles = Math.max(1, pixeles - .25); renderer.setPixelRatio(pixeles); composer.setPixelRatio(pixeles); }
+                else if (lite && !a30) a30 = true;
+                else return false;
+                try { localStorage.setItem(CLAVE, String((Number(localStorage.getItem(CLAVE)) || 0) + 1)); } catch (e) { }
                 return true;
             }
             // la cámara mira a su zona, con el giro del arrastre y un balanceo muy suave
@@ -855,10 +874,15 @@
             }
             function frame(ahora) {
                 raf = 0;
+                const seguir = () => { if (visible && !document.hidden) raf = requestAnimationFrame(frame); };
+                // tras la pausa del scroll el primer intervalo no cuenta (si no, parecería un fotograma lento)
+                if (lite && ahora - ultimoScroll < 160) { previo = 0; seguir(); return; }
+                if (a30 && ahora - ultimoDibujo < 30) { seguir(); return; }
+                ultimoDibujo = ahora;
                 const dt = Math.min(.05, (ahora - ultimo) / 1000); ultimo = ahora;
                 const intervalo = previo ? ahora - previo : 0; previo = ahora;
-                if (intervalo) { medidos++; suma += Math.min(intervalo, 100); }
-                if (medidos >= 30) { if (suma / medidos > 18.5 && bajarResolucion()) ajustar(); medidos = suma = 0; }
+                if (intervalo) { medidos++; suma += Math.min(intervalo, 100); if (cadencia.length < 400) cadencia.push(intervalo); }
+                if (medidos >= 30) { if (suma / medidos > (a30 ? 38 : 18.5) && bajarResolucion()) ajustar(); medidos = suma = 0; }
                 const t = ahora / 1000;
                 if (estado.t < 1) {
                     estado.t = Math.min(1, (ahora - estado.inicio) / 1700);
@@ -873,7 +897,7 @@
                 if (!reducir) {
                     bolsas.children.forEach(s => { if (s.userData.fase !== undefined) s.rotation.z = Math.sin(t * 1.3 + s.userData.fase) * .025; });
                     polvo.position.y = Math.sin(t * .2) * .15; polvo.rotation.y = t * .01;
-                    if ((cuadro++ & 1) === 0) renderer.shadowMap.needsUpdate = true;
+                    if (cuadro++ % (lite ? 3 : 2) === 0) renderer.shadowMap.needsUpdate = true;
                 }
                 composer.render();
                 const quieto = estado.t >= 1 && Math.abs(estado.yaw - estado.yawObj) < .0005 && Math.abs(estado.pitch - estado.pitchObj) < .0005;
@@ -888,29 +912,66 @@
             colocarCamara(performance.now() / 1000);
             // shaders y texturas se preparan por partes antes de quitar la pantalla de carga
             await respiro();
+            fase('cámara');
             await compilar(renderer, escena, camara, composer.renderTarget1);
+            fase('shaders');
             await subirTexturas(renderer, escena);
+            fase('texturas');
             // primer dibujo en dos tiempos: la escena con sus sombras, y después el postproceso
             renderer.shadowMap.needsUpdate = true;
             renderer.setRenderTarget(composer.renderTarget1); renderer.render(escena, camara); renderer.setRenderTarget(null);
             await valla(renderer);
             composer.render();
+            fase('primer dibujo');
             listo = true;
             contenedor.classList.add('gym3d-listo');
             contenedor.gym3d = { ir, zonas: ORDEN };
+            if (window.ATR3D_quitarFachada) ATR3D_quitarFachada(contenedor);
             pedirFrame();
+            if (diag) diagnostico(contenedor, renderer, fases, cadencia, calidad);
             // cuando la pantalla de carga termina de fundirse se quita: así el spinner deja de girar
             setTimeout(() => { const carga = contenedor.querySelector('.gym3d-carga'); if (carga) carga.remove(); }, 900);
         }
 
         document.querySelectorAll('.gym3d').forEach(el => {
-            // se monta a pantalla y media de verse, y por partes, para que el scroll no se trabe
+            const montarYa = () => montar(el).catch(err => { console.error(err); el.classList.add('gym3d-sin-webgl'); });
+            // tocada la imagen previa, se monta ya; si no, a pantalla y media de verse, y por partes, para que el scroll no se trabe
+            if (el.dataset.iniciar) { montarYa(); return; }
             const obs = new IntersectionObserver(en => {
-                if (en[0].isIntersecting) { obs.disconnect(); montar(el).catch(err => { console.error(err); el.classList.add('gym3d-sin-webgl'); }); }
+                if (en[0].isIntersecting) { obs.disconnect(); montarYa(); }
             }, { rootMargin: '150% 0px' });
             obs.observe(el);
         });
-    }).catch(err => avisarFallo('.gym3d', err)));
+    }).catch(err => avisarFallo('.gym3d', err)); };
+    // en pantallas táctiles: imagen primero y 3D al tocar; en ordenador, como antes
+    if (window.ATR3D_tactil && window.ATR3D_fachada) {
+        document.querySelectorAll('.gym3d').forEach(el => ATR3D_fachada(el, 'img/3d/gimnasio', 'Toca para explorar en 3D', 'Montando el gimnasio…').then(arrancar));
+    } else {
+        // Three.js pesa unos 700 KB: se pide cuando la página ya ha cargado y el navegador está libre,
+        // o antes si el gimnasio se acerca a la pantalla.
+        cuandoHagaFalta('.gym3d', arrancar);
+    }
+    // ?diagnostico: cuánto tarda cada fase del montaje y la cadencia real, en pantalla (para medir en el aparato de verdad)
+    function diagnostico(contenedor, renderer, fases, cadencia, calidad) {
+        const pre = document.createElement('pre');
+        pre.className = 'gym3d-diagnostico';
+        pre.style.cssText = 'position:absolute;left:8px;right:8px;bottom:64px;z-index:5;margin:0;padding:8px;font:11px/1.35 ui-monospace,Menlo,monospace;color:#9f9;background:rgba(0,0,0,.85);border-radius:8px;white-space:pre-wrap;pointer-events:none';
+        contenedor.appendChild(pre);
+        const base = fases.map(([n, t], i) => n.padEnd(13) + String(t).padStart(6) + ' ms' + (i ? '  (+' + (t - fases[i - 1][1]) + ')' : '')).join('\n');
+        const mostrar = () => {
+            const c = cadencia.slice(), o = c.slice().sort((a, b) => a - b), q = p => o.length ? o[Math.min(o.length - 1, Math.floor(o.length * p / 100))].toFixed(1) : '–';
+            const i = renderer.info;
+            const gl = renderer.getContext();
+            const fuente = (i.programs || []).reduce((n, p) => n + (gl.getAttachedShaders(p.program) || []).reduce((m, sh) => m + (gl.getShaderSource(sh) || '').length, 0), 0);
+            const dato = { fases, perfil: calidad.lite ? 'ligero' : 'completo', calidad, fotogramas: c.length, p50: q(50), p95: q(95), max: o.length ? o[o.length - 1].toFixed(0) : '–',
+                programas: i.programs ? i.programs.length : null, fuente_kb: Math.round(fuente / 1024), geometrias: i.memory.geometries, texturas: i.memory.textures };
+            window.ATR3D_diag = dato;
+            pre.textContent = 'ATR-GYM 3D · perfil ' + dato.perfil + ' · pixeles ' + renderer.getPixelRatio() + '\n' + base + '\nfotogramas ' + c.length + ' · p50 ' + dato.p50 + ' ms · p95 ' + dato.p95 + ' · máx ' + dato.max
+                + '\nprogramas ' + dato.programas + ' (' + dato.fuente_kb + ' KB de shaders) · texturas ' + dato.texturas;
+        };
+        mostrar();
+        setInterval(mostrar, 1500);
+    }
     // pide el 3D cuando hace falta: con la página ya cargada y el navegador libre,
     // o en cuanto la escena está a dos pantallas (con «ahorro de datos», solo entonces)
     function cuandoHagaFalta(selector, empezar) {
