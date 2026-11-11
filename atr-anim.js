@@ -354,9 +354,16 @@
         const largo = Math.abs(destino - scrollY) > innerHeight * 1.5;
         const raiz = document.documentElement;
         if (largo || reduce) {
-            raiz.style.scrollBehavior = 'auto';           // directo, aunque el CSS pida animación
-            scrollTo(0, destino);
-            raiz.style.scrollBehavior = '';
+            // directo, aunque el CSS pida animación. Se pide «instant» de forma expresa: cambiar scroll-behavior
+            // en línea no basta en Chrome cuando el destino es el píxel 0 (ahí no recalcula los estilos antes de
+            // moverse y «Inicio» seguía recorriendo animada toda la página)
+            try { scrollTo({ top: destino, behavior: 'instant' }); }
+            catch (e) {                                   // navegadores antiguos que no conocen «instant»
+                raiz.style.scrollBehavior = 'auto';
+                void getComputedStyle(raiz).scrollBehavior;
+                scrollTo(0, destino);
+                raiz.style.scrollBehavior = '';
+            }
         } else {
             scrollTo({ top: destino, behavior: 'smooth' });
         }
