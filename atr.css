@@ -3621,7 +3621,8 @@ html body .atr-nav { transition: width var(--t-resorte) var(--resorte), transfor
     html body .modal-contenido, html body .trofeos, html body .lector, html body .timer-panel, html body .v4-toast,
     html body .toast-logro, html body .srch-box, html body .atr-links {
         -webkit-backdrop-filter: none; backdrop-filter: none;
-        background: var(--vidrio-capa), rgba(30, 30, 32, .96);
+        /* del todo opaco: con un 96 % el titular de detrás se leía como texto fantasma a través del menú */
+        background: var(--vidrio-capa), rgb(30, 30, 32);
     }
     html body .modal-overlay, html body .trofeos-overlay, html body .lector-overlay, html body .srch-backdrop {
         -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(0, 0, 0, .55);
@@ -3653,11 +3654,14 @@ html body .atr-nav { transition: width var(--t-resorte) var(--resorte), transfor
     html body .modal-overlay .modal-contenido, html body .trofeos-overlay .trofeos, html body .lector-overlay .lector { filter: none; }
     /* otra barra fija con desenfoque (índice de las páginas de disciplina) y los textos y botones que flotan sobre la escena 3D:
        con la escena dibujándose a 60 fps, cada uno obligaba a desenfocar de nuevo lo de detrás en cada fotograma */
-    html body .pg-indice { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(20, 20, 22, .94); }
+    html body .pg-indice { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgb(20, 20, 22); }
     html body .gym3d-ficha, html body .gym3d-zonas button, html body .escena3d-ficha, html body .escena3d-pista,
     html body .escena3d-btn, html body .escena3d-planos button {
         -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(20, 20, 22, .82);
     }
+    /* los selectores de zona y de plano flotan sobre la escena: sin desenfoque, su relleno claro del 24 % dejaba que los
+       detalles brillantes de detrás cruzaran los rótulos; con una base oscura se leen limpios */
+    html body .gym3d-zonas, html body .escena3d-planos { background: rgba(26, 26, 28, .8); }
     /* botones de cristal: sin la sombra de 20–24 px */
     html body .btn-iron, html body .sup-btn, html body .bx, html body .btn-copiar, html body .btn-anadir-carrito, html body .btn-publicar-post,
     html body .btn-publicar-checkin, html body .btn-compromiso, html body .btn-pago, html body .btn-confirmar-bizum, html body .btn-enviar,
@@ -3676,8 +3680,11 @@ html body .atr-nav { transition: width var(--t-resorte) var(--resorte), transfor
 /* en el centro de la imagen, como el botón de un vídeo: abajo lo tapaba la barra de pestañas */
 .fachada-boton {
     position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; white-space: nowrap;
-    min-height: 48px; padding: 0 22px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .3);
-    background: rgba(28, 28, 30, .92); color: #F5F5F7; font: 600 15px/1 var(--f-apple-texto, -apple-system, system-ui, sans-serif); letter-spacing: -.01em;
+    min-height: 48px; padding: 0 22px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .16);
+    /* el mismo cristal que los botones secundarios de la web (degradado y filo de luz), sobre una base oscura para leerse encima de la imagen */
+    background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .05)), rgba(22, 22, 24, .78);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .32);
+    color: var(--blanco-apple, #F5F5F7); font: 600 15px/1 var(--f-apple-texto, -apple-system, system-ui, sans-serif); letter-spacing: -.01em;
     transition: opacity .4s ease, transform .2s cubic-bezier(.3, 1.4, .5, 1);
 }
 .fachada-boton:active { transform: translate(-50%, -50%) scale(.96); transition-duration: .12s; }
