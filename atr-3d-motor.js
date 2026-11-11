@@ -685,15 +685,17 @@
             const espejos = [];
             const claveCalidad = 'atr3d-calidad-' + (contenedor.dataset.escena || def.etiqueta || '');
             let escalon = 0;
-            function bajarCalidad() {
+            function bajarCalidad(soloGuardables) {
                 if (pixeles > 1) { pixeles = calidad.apple && !calidad.lite ? 1 : Math.max(1, pixeles - .25); renderer.setPixelRatio(pixeles); composer.setPixelRatio(pixeles); }
                 else if (espejos.length && escalon < 1) { escalon = 1; espejos.forEach(e => { const rt = e.getRenderTarget(); rt.setSize(Math.round(rt.width / 2), Math.round(rt.height / 2)); }); }
                 else if (espejos.length && escalon < 2) {
                     escalon = 2;
                     espejos.forEach(e => { const reflejar = e.onBeforeRender; e.onBeforeRender = function () { if (cuadro & 1) return; reflejar.apply(this, arguments); }; });
                 }
-                else if (calidad.lite && !a30) a30 = true;   // táctil: 30 fps estables antes que 40 a saltos
-                else if (escalon < 3) escalon = 3;
+                else if (!calidad.lite && escalon < 3) escalon = 3;
+                // táctil: 30 fps estables antes que 40 a saltos. Solo durante esta visita, no se guarda: con el iPhone en
+                // bajo consumo el navegador ya limita a 30 fps, y guardarlo dejaría la escena a 30 para siempre
+                else if (calidad.lite && !a30 && !soloGuardables) { a30 = true; return true; }
                 else return false;
                 try { localStorage.setItem(claveCalidad, String((Number(localStorage.getItem(claveCalidad)) || 0) + 1)); } catch (e) { }
                 return true;
@@ -735,7 +737,8 @@
                 // fotogramas seguidos: antes se contaba desde que se pedía el fotograma, así que
                 // uno lento nunca salía lento y la escena se quedaba a 20 fps con toda la resolución
                 // (la primera tanda es corta para que el ajuste llegue cuanto antes)
-                if (intervalo) { medidos++; suma += Math.min(intervalo, 100); }
+                // (un parón, como volver de otra app o una pestaña tapada, no es un fotograma lento: no cuenta)
+                if (intervalo && intervalo < 250) { medidos++; suma += Math.min(intervalo, 100); }
                 if (medidos >= (cuadro < 60 ? 20 : 40)) {
                     if (suma / medidos > (a30 ? 38 : 18.5) && bajarCalidad()) ajustar();
                     medidos = suma = 0;
@@ -763,7 +766,7 @@
             escena.traverse(o => { if (o.isReflector) espejos.push(o); });
             let aprendido = 0;
             try { aprendido = Number(localStorage.getItem(claveCalidad)) || 0; } catch (e) { }
-            for (let i = 0; i < aprendido; i++) { const antes = localStorage.getItem(claveCalidad); if (!bajarCalidad()) break; try { localStorage.setItem(claveCalidad, antes); } catch (e) { } }
+            for (let i = 0; i < aprendido; i++) { const antes = localStorage.getItem(claveCalidad); if (!bajarCalidad(true)) break; try { localStorage.setItem(claveCalidad, antes); } catch (e) { } }
             if (aprendido) ajustar();
             // primer dibujo en dos tiempos: la escena con sus sombras, y después el postproceso
             renderer.shadowMap.needsUpdate = true;
